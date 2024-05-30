@@ -1,32 +1,31 @@
 apiVersion: kubevirt.io/v1
 kind: VirtualMachine
 metadata:
-  name: quarkus-dev-vm
+  name: quarkus-dev
   labels:
-    app: quarkus-dev-vm
+    app: quarkus-dev
 spec:
   dataVolumeTemplates:
     - apiVersion: cdi.kubevirt.io/v1beta1
       kind: DataVolume
       metadata:
-        name: quarkus-dev-vm
+        name: quarkus-dev-disk
       spec:
-        source:
-          registry:
-            url: 'docker://quay.io/ch007m/quarkus-dev-vm'
-        storage:
+        pvc:
+          accessModes:
+            - ReadWriteOnce
           resources:
             requests:
-              storage: 30Gi
+              storage: 11Gi
+        source:
+          pvc:
+            namespace: default
+            name: podman-remote
   running: true
   template:
     metadata:
-      annotations:
-        vm.kubevirt.io/flavor: small
-        vm.kubevirt.io/os: fedora
-        vm.kubevirt.io/workload: server
       labels:
-        kubevirt.io/domain: quarkus-dev-vm
+        kubevirt.io/domain: quarkus-dev
         kubevirt.io/size: small
     spec:
       accessCredentials:
@@ -35,7 +34,7 @@ spec:
               configDrive: {}
             source:
               secret:
-                secretName: fedora-ssh-key
+                secretName: quarkus-dev-ssh-key
       domain:
         cpu:
           cores: 1
@@ -51,14 +50,13 @@ spec:
               name: cloudinitdisk
           interfaces:
             - masquerade: {}
-              #model: virtio # default model is virtio: https://kubevirt.io/user-guide/virtual_machines/interfaces_and_networks/#masquerade-ipv4-and-ipv6-dual-stack-support
+              model: virtio
               name: default
-          networkInterfaceMultiqueue: false
+          networkInterfaceMultiqueue: true
           rng: {}
         resources:
           requests:
             memory: 2Gi
-      evictionStrategy: LiveMigrate
       networks:
         - name: default
           pod: {}
@@ -67,12 +65,8 @@ spec:
         - cloudInitConfigDrive:
             userData: |-
               #cloud-config
-              #user: fedora
-              #password: rhpass
-              #chpasswd: { expire: False }
-              #runcmd:
-              #- curl -sSL https://raw.githubusercontent.com/iocanel/openshift-vm-playground/main/resources/config.sh | bash
+              hostname: quarkus-dev
           name: cloudinitdisk
         - dataVolume:
-            name: quarkus-dev-vm
+            name: quarkus-dev-disk
           name: rootdisk
