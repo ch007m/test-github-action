@@ -113,8 +113,8 @@ jobs:
             publisher: Argo CD Community
           EOF
           
-          kubectl apply -n olm https://raw.githubusercontent.com/argoproj-labs/argocd-operator/master/deploy/operator_group.yaml
-          kubectl apply -n olm https://raw.githubusercontent.com/argoproj-labs/argocd-operator/master/deploy/subscription.yaml
+          kubectl apply -n olm -f https://raw.githubusercontent.com/argoproj-labs/argocd-operator/master/deploy/operator_group.yaml
+          kubectl apply -n olm -f https://raw.githubusercontent.com/argoproj-labs/argocd-operator/master/deploy/subscription.yaml
 
       - name: Grant more rights to the default serviceaccount to access Kubevirt, Kubevirt CDI & Kubernetes APIs
         run: |
