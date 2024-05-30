@@ -1,4 +1,4 @@
-name: Create a kind cluster, install kubevirt to testit
+name: Create a kind cluster, install kubevirt to test it
 
 on:
   workflow_dispatch:
@@ -79,17 +79,17 @@ jobs:
           kubectl get pods -n kubevirt
           kubectl get pods -n cdi
 
-      - name: Deploy Tekton
-        run: |
-          kubectl apply -f https://github.com/tektoncd/pipeline/releases/download/v0.59.0/release.yaml
-          kubectl wait deployment -n tekton-pipelines tekton-pipelines-controller --for condition=Available=True --timeout=90s
-          kubectl wait deployment -n tekton-pipelines tekton-pipelines-webhook --for condition=Available=True --timeout=90s
-          
-          echo "Disabling the affinity-assistant to avoid the error: more than one PersistentVolumeClaim is bound to a TaskRun = pod"
-          kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"disable-affinity-assistant":"true"}}'
-          
-          curl -LO https://github.com/tektoncd/cli/releases/download/v${TEKTON_CLIENT}/tektoncd-cli-${TEKTON_CLIENT}_Linux-64bit.deb
-          sudo dpkg -i ./tektoncd-cli-${TEKTON_CLIENT}_Linux-64bit.deb
+      #- name: Deploy Tekton
+      #  run: |
+      #    kubectl apply -f https://github.com/tektoncd/pipeline/releases/download/v0.59.0/release.yaml
+      #    kubectl wait deployment -n tekton-pipelines tekton-pipelines-controller --for condition=Available=True --timeout=90s
+      #    kubectl wait deployment -n tekton-pipelines tekton-pipelines-webhook --for condition=Available=True --timeout=90s
+      #
+      #    echo "Disabling the affinity-assistant to avoid the error: more than one PersistentVolumeClaim is bound to a TaskRun = pod"
+      #    kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"disable-affinity-assistant":"true"}}'
+      #
+      #    curl -LO https://github.com/tektoncd/cli/releases/download/v${TEKTON_CLIENT}/tektoncd-cli-${TEKTON_CLIENT}_Linux-64bit.deb
+      #    sudo dpkg -i ./tektoncd-cli-${TEKTON_CLIENT}_Linux-64bit.deb
 
       - name: Grant more rights to the default serviceaccount to access Kubevirt, Kubevirt CDI & Kubernetes APIs
         run: |
