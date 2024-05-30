@@ -73,7 +73,7 @@ jobs:
           
           echo "Patch the StorageProfile to use the storageclass standard and give ReadWrite access"
           kubectl get StorageProfile
-          kubectl patch --type merge -p '{"spec": {"claimPropertySets": [{"accessModes": ["ReadWriteOnce"]}, "volumeMode": "FileSystem"]}}' StorageProfile standard
+          kubectl patch --type merge -p '{"spec": {"claimPropertySets": [{"accessModes": ["ReadWriteOnce"], "volumeMode": "Filesystem"}]}}' StorageProfile standard
           
           echo "Successfully deployed KubeVirt, CDI:"
           kubectl get pods -n kubevirt
