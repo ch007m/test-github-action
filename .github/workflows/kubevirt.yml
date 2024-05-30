@@ -105,4 +105,4 @@ jobs:
           
           echo "## Creating a DataVolume using as registry image our customized Fedora Cloud OS packaging: podman, socat"
           kubectl create ns vm-images
-          kubectl apply -n vm-images -f resources/quay-to-pvc-datavolume.yml
+          kubectl apply -n vm-images -f .github/resources/quay-to-pvc-datavolume.yml
