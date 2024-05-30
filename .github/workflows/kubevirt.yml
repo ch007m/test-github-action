@@ -72,6 +72,7 @@ jobs:
           kubectl wait --for=condition=Available kubevirt kubevirt --namespace=kubevirt --timeout=5m
           
           echo "Patch the StorageProfile to use the storageclass standard and give ReadWrite access"
+          kubectl get StorageProfile
           kubectl patch --type merge -p '{"spec": {"claimPropertySets": [{"accessModes": ["ReadWriteOnce"]}]}}' StorageProfile standard
           
           echo "Successfully deployed KubeVirt, CDI:"
@@ -95,3 +96,13 @@ jobs:
           kubectl create clusterrolebinding pod-kubevirt-viewer --clusterrole=kubevirt.io:view --serviceaccount=default:default
           kubectl create clusterrolebinding cdi-kubevirt-viewer --clusterrole=cdi.kubevirt.io:view --serviceaccount=default:default
           kubectl create clusterrolebinding quarkus-dev --clusterrole=admin --serviceaccount=default:default
+
+      - name: Creating a VM and generating a SSH key (private/public)
+        run: |
+          echo "## Creating the kubernetes secret storing the public key"
+          ssh-keygen -N "" -f id_rsa
+          kubectl create secret generic quarkus-dev-ssh-key -n default --from-file=key=id_rsa.pub
+          
+          echo "## Creating a DataVolume using as registry image our customized Fedora Cloud OS packaging: podman, socat"
+          kubectl create ns vm-images
+          kubectl apply -n vm-images -f resources/quay-to-pvc-datavolume.yml
