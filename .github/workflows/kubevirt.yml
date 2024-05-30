@@ -1,3 +1,5 @@
+name: Create a kind cluster, install kubevirt to testit
+
 on:
   workflow_dispatch:
   push:
