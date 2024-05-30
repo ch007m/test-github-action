@@ -115,7 +115,7 @@ jobs:
 
           echo "## Kustomize the VM yaml resource to clone the PVC of the OS using the vm-images namespace instead of the default on ocp ..."
           kustomize build .github/resources | kubectl apply -f -
-          kubectl wait --for=condition=Ready vm/quarkus-dev --timeout=180s
+          kubectl wait --for=condition=Ready vm/quarkus-dev-vm --timeout=180s
           
       - name: Wait till podman remote replies
         run: |
