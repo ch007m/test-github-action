@@ -52,14 +52,17 @@ jobs:
 
       - name : Install Tekton
         run: |
-          # kubectl apply -f https://storage.googleapis.com/tekton-releases/operator/previous/$TEKTON_OPERATOR_VERSION/release.yaml
-          # kubectl apply -f https://raw.githubusercontent.com/tektoncd/operator/$TEKTON_OPERATOR_VERSION/config/crs/kubernetes/config/all/operator_v1alpha1_config_cr.yaml
-
-          kubectl create -f https://operatorhub.io/install/tektoncd-operator.yaml
-          kubectl wait deployment -n operators tekton-operator --for condition=Available=True --timeout=90s
-          kubectl wait deployment -n operators tekton-operator-webhook --for condition=Available=True --timeout=90s
+          # kubectl create -f https://operatorhub.io/install/tektoncd-operator.yaml
+          # kubectl wait deployment -n operators tekton-operator --for condition=Available=True --timeout=90s
+          # kubectl wait deployment -n operators tekton-operator-webhook --for condition=Available=True --timeout=90s
+          # kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/tekton/tektonpipeline.yaml
           
-          kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/tekton/tektonpipeline.yaml
+          # Install Tekton Operator without OLM
+          kubectl apply -f https://storage.googleapis.com/tekton-releases/operator/previous/$TEKTON_OPERATOR_VERSION/release.yaml
+          kubectl apply -f https://raw.githubusercontent.com/tektoncd/operator/$TEKTON_OPERATOR_VERSION/config/crs/kubernetes/config/all/operator_v1alpha1_config_cr.yaml
+          
+          kubectl wait deployment -n tekton-operator tekton-operator --for condition=Available=True --timeout=90s
+          kubectl wait deployment -n tekton-operator tekton-operator-webhook --for condition=Available=True --timeout=90s
           
           kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"disable-affinity-assistant":"true"}}'
 
