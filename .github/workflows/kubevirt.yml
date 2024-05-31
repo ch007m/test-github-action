@@ -10,7 +10,7 @@ env:
   KUBEVIRT_VERSION: v1.2.1
   KUBEVIRT_CDI_VERSION: v1.59.0
 
-  KUBEVIRT_TEKTON_TASKS: v0.16.0
+  TEKTON_OPERATOR_VERSION: v0.70.2
   TEKTON_VERSION: v0.59.0
   TEKTON_CLIENT: 0.37.0
 
@@ -58,7 +58,7 @@ jobs:
           # kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/tekton/tektonpipeline.yaml
           
           # Install Tekton Operator without OLM
-          kubectl apply -f https://storage.googleapis.com/tekton-releases/operator/previous/$TEKTON_OPERATOR_VERSION/release.yaml
+          kubectl apply -f https://github.com/tektoncd/operator/releases/download/$TEKTON_OPERATOR_VERSION/release.yaml
           kubectl apply -f https://raw.githubusercontent.com/tektoncd/operator/$TEKTON_OPERATOR_VERSION/config/crs/kubernetes/config/all/operator_v1alpha1_config_cr.yaml
           
           kubectl wait deployment -n tekton-operator tekton-operator --for condition=Available=True --timeout=90s
