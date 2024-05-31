@@ -50,7 +50,7 @@ jobs:
           chmod +x install.sh
           ./install.sh $OLM_VERSION
 
-      - name : Install Tekton
+      - name : Install Tekton without OLM but using its operator
         run: |
           # kubectl create -f https://operatorhub.io/install/tektoncd-operator.yaml
           # kubectl wait deployment -n operators tekton-operator --for condition=Available=True --timeout=90s
@@ -63,6 +63,11 @@ jobs:
           kubectl wait deployment -n tekton-operator tekton-operator --for condition=Available=True --timeout=90s
           kubectl wait deployment -n tekton-operator tekton-operator-webhook --for condition=Available=True --timeout=90s
           
+          until "kubectl get ns tekton-pipelines > /dev/null 2>&1"; do
+            echo "Namespace `tekton-pipelines` not found yet, waiting..."
+            sleep 5
+          done
+  
           kubectl wait deployment -n tekton-pipelines tekton-pipelines-controller --for condition=Available=True --timeout=90s
           kubectl wait deployment -n tekton-pipelines tekton-triggers-controller --for condition=Available=True --timeout=90s
           
