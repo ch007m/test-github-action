@@ -100,6 +100,14 @@ jobs:
 
           kubectl create -f https://operatorhub.io/install/community-kubevirt-hyperconverged.yaml
 
+      - name: Give more RBAC to Virt resources and RW for PVC
+        run: |
+          kubectl patch --type merge -p '{"spec": {"claimPropertySets": [{"accessModes": ["ReadWriteOnce"], "volumeMode": "Filesystem"}]}}' StorageProfile standard
+
+          kubectl create clusterrolebinding pod-kubevirt-viewer --clusterrole=kubevirt.io:view --serviceaccount=default:default
+          kubectl create clusterrolebinding cdi-kubevirt-viewer --clusterrole=cdi.kubevirt.io:view --serviceaccount=default:default
+          kubectl create clusterrolebinding quarkus-dev --clusterrole=admin --serviceaccount=default:default
+
       - name: Check pods ...
         run: |
           sleep 30
