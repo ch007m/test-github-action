@@ -112,9 +112,13 @@ jobs:
         
           echo "Waiting for KubeVirt to be ready"
           kubectl wait deployment hyperconverged-cluster-operator --namespace=kubevirt-hyperconverged --for=condition=Available --timeout=5m
+          sleep 30s
           
           echo "Get list of pods ..."
           kubectl get pod -A
+          
+          echo "Get csv ..."
+          kubectl get csv -n operators
 
       - name: Give more RBAC to Virt resources and RW for PVC
         run: |
