@@ -99,10 +99,9 @@ jobs:
           ./deploy.sh
 
           kubectl create -f https://operatorhub.io/install/community-kubevirt-hyperconverged.yaml
-          kubectl get HyperConverged -A
           
           echo "Waiting for KubeVirt to be ready"
-          kubectl wait --for=condition=Available kubevirt kubevirt --namespace=kubevirt --timeout=5m
+          kubectl wait --for=condition=Available kubevirt kubevirt-hyperconverged --namespace=kubevirt-hyperconverged --timeout=5m
 
       - name: Give more RBAC to Virt resources and RW for PVC
         run: |
