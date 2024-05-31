@@ -117,8 +117,20 @@ jobs:
           echo "Get list of pods ..."
           kubectl get pod -A
           
-          echo "Get csv ..."
-          kubectl get csv -n operators
+          sleep 30s
+          echo "Get list of CRDs ..."
+          kubectl get crds
+          kubectl get pod -A
+          
+          sleep 5m
+          echo "Get list of CRDs ..."
+          kubectl get crds
+          kubectl get pod -A
+          
+          sleep 5m
+          echo "Get list of CRDs ..."
+          kubectl get crds
+          kubectl get pod -A
 
       - name: Give more RBAC to Virt resources and RW for PVC
         run: |
