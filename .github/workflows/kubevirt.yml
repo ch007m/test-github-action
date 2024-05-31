@@ -52,7 +52,7 @@ jobs:
       - name : Install Tekton
         run: |
           kubectl create -f https://operatorhub.io/install/tektoncd-operator.yaml
-          kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/tekton/tektonpipeline.yaml.yaml
+          kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/tekton/tektonpipeline.yaml
 
       - name: Install and configure ArgoCD
         run: |
