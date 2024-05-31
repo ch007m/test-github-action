@@ -99,7 +99,7 @@ jobs:
           ./deploy.sh
 
           kubectl create -f https://operatorhub.io/install/community-kubevirt-hyperconverged.yaml
-          k get csv -A
+          kubectl get csv -A
           sleep 20
           kubectl get csv -A
           
