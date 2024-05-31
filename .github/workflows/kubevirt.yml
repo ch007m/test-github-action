@@ -108,6 +108,11 @@ jobs:
           kubectl create clusterrolebinding cdi-kubevirt-viewer --clusterrole=cdi.kubevirt.io:view --serviceaccount=default:default
           kubectl create clusterrolebinding quarkus-dev --clusterrole=admin --serviceaccount=default:default
 
+      - name: Install our Fedora podman image
+        run: |
+          kubectl create ns vm-images
+          kubectl apply -n vm-images -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/quay-to-pvc-datavolume.yml
+
       - name: Check pods ...
         run: |
           sleep 30
