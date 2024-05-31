@@ -53,6 +53,10 @@ jobs:
         run: |
           kubectl create -f https://operatorhub.io/install/tektoncd-operator.yaml
           kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/tekton/tektonpipeline.yaml
+          
+          kubectl wait deployment -n operators tekton-operator --for condition=Available=True --timeout=90s
+          
+          kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"disable-affinity-assistant":"true"}}'
 
       - name: Install and configure ArgoCD
         run: |
@@ -75,6 +79,8 @@ jobs:
           # kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj-labs/argocd-operator/master/deploy/subscription.yaml
           
           kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/argocd/subscription.yaml
+          kubectl wait deployment -n operators argocd-operator-controller-manager --for condition=Available=True --timeout=90s
+          
           kubectl create ns gitops
           kubectl apply -n gitops -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/argocd/argocd.yaml
 
