@@ -89,12 +89,18 @@ jobs:
           kubectl create ns gitops
           kubectl apply -n gitops -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/argocd/argocd.yaml
           
-          kubectl get argocd -A -o yaml
-          
           sleep 20
           kubectl wait deployment -n gitops argocd-gitops-applicationset-controller --for condition=Available=True --timeout=90s
+
+      - name: Install Kubevirt
+        run: |
+          curl -sL https://raw.githubusercontent.com/kubevirt/hyperconverged-cluster-operator/main/deploy/deploy.sh -o deploy.sh
+          chmod +x deploy.sh
+          ./deploy.sh
+
+          kubectl create -f https://operatorhub.io/install/community-kubevirt-hyperconverged.yaml
 
       - name: Check pods ...
         run: |
           sleep 30
-          kubectl get po -A
+          kubectl get pod -A
