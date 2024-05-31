@@ -101,7 +101,18 @@ jobs:
           kubectl create -f https://operatorhub.io/install/community-kubevirt-hyperconverged.yaml
           k get csv -A
           sleep 20
-          k get csv -A
+          kubectl get csv -A
+          
+          function csv_succeeded {
+              kubectl get csv xxxxxxx -o jsonpath='{.status.phase}'
+          }
+          
+          # Loop until the CSV is Succeeded
+          until [[ $(csv_succeeded) == "Succeeded" ]]; do
+              echo "Waiting for CSV 'xxxxxx' to reach Succeeded phase..."
+              sleep 5
+          done
+          
           #echo "Waiting for KubeVirt to be ready"
           #kubectl wait --for=condition=Available kubevirt kubevirt-hyperconverged --namespace=kubevirt-hyperconverged --timeout=5m
 
