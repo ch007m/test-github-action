@@ -88,8 +88,11 @@ jobs:
 
           kubectl create ns gitops
           kubectl apply -n gitops -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/argocd/argocd.yaml
-          kubectl wait deployment -n gitops argocd-gitops-applicationset-controller --for condition=Available=True --timeout=90s
+          
           kubectl get argocd -A -o yaml
+          
+          sleep 20
+          kubectl wait deployment -n gitops argocd-gitops-applicationset-controller --for condition=Available=True --timeout=90s
 
       - name: Check pods ...
         run: |
