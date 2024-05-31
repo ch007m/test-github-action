@@ -49,10 +49,15 @@ jobs:
           curl -sL https://github.com/operator-framework/operator-lifecycle-manager/releases/download/$OLM_VERSION/install.sh -o install.sh
           chmod +x install.sh
           ./install.sh $OLM_VERSION
+
       - name : Install Tekton
         run: |
+          # kubectl apply -f https://storage.googleapis.com/tekton-releases/operator/previous/$TEKTON_OPERATOR_VERSION/release.yaml
+          # kubectl apply -f https://raw.githubusercontent.com/tektoncd/operator/$TEKTON_OPERATOR_VERSION/config/crs/kubernetes/config/all/operator_v1alpha1_config_cr.yaml
+
           kubectl create -f https://operatorhub.io/install/tektoncd-operator.yaml
-          kubectl wait deployment -n operators argocd-operator-controller-manager --for condition=Available=True --timeout=90s
+          kubectl wait deployment -n operators tekton-operator --for condition=Available=True --timeout=90s
+          kubectl wait deployment -n operators tekton-operator-webhook --for condition=Available=True --timeout=90s
           
           kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/tekton/tektonpipeline.yaml
           
