@@ -85,17 +85,12 @@ jobs:
               echo "Waiting for CSV 'argocd-operator.v0.10.0' to reach Succeeded phase..."
               sleep 5
           done
-          kubectl get po -A
-          
-          kubectl wait deployment -n operators argocd-operator-controller-manager --for condition=Available=True --timeout=90s
-          kubectl get po -A
-          
+
           kubectl create ns gitops
           kubectl apply -n gitops -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/argocd/argocd.yaml
+          kubectl wait deployment -n  gitops argocd-gitops-applicationset-controller --for condition=Available=True --timeout=90s
 
       - name: Check pods ...
         run: |
-          kubectl get po -A
           sleep 30
           kubectl get po -A
-          sleep 30
