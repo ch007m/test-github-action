@@ -63,11 +63,12 @@ jobs:
           kubectl wait deployment -n tekton-operator tekton-operator --for condition=Available=True --timeout=90s
           kubectl wait deployment -n tekton-operator tekton-operator-webhook --for condition=Available=True --timeout=90s
           
-          until "kubectl get ns tekton-pipelines > /dev/null 2>&1"; do
-            echo "Namespace `tekton-pipelines` not found yet, waiting..."
-            sleep 5
-          done
-  
+          # until "kubectl get ns tekton-pipelines > /dev/null 2>&1"; do
+          #   echo "Namespace `tekton-pipelines` not found yet, waiting..."
+          #   sleep 5
+          # done
+          kubectl wait tektonconfig config --for condition=Ready=True --timeout=90s
+          
           kubectl wait deployment -n tekton-pipelines tekton-pipelines-controller --for condition=Available=True --timeout=90s
           kubectl wait deployment -n tekton-pipelines tekton-triggers-controller --for condition=Available=True --timeout=90s
           
