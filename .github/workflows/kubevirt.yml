@@ -99,6 +99,10 @@ jobs:
           ./deploy.sh
 
           kubectl create -f https://operatorhub.io/install/community-kubevirt-hyperconverged.yaml
+          kubectl get HyperConverged -A
+          
+          echo "Waiting for KubeVirt to be ready"
+          kubectl wait --for=condition=Available kubevirt kubevirt --namespace=kubevirt --timeout=5m
 
       - name: Give more RBAC to Virt resources and RW for PVC
         run: |
@@ -112,6 +116,13 @@ jobs:
         run: |
           kubectl create ns vm-images
           kubectl apply -n vm-images -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/quay-to-pvc-datavolume.yml
+
+      - name: Create ssh key, secret and VM
+        run: |
+          ssh-keygen -N "" -f id_rsa
+          kubectl create secret generic quarkus-dev-ssh-key -n default --from-file=key=id_rsa.pub
+          
+          kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/quarkus-dev-vm.yml
 
       - name: Check pods ...
         run: |
