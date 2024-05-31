@@ -59,16 +59,13 @@ jobs:
           
           # Install Tekton Operator without OLM
           kubectl apply -f https://github.com/tektoncd/operator/releases/download/$TEKTON_OPERATOR_VERSION/release.yaml
-          
           kubectl wait deployment -n tekton-operator tekton-operator --for condition=Available=True --timeout=90s
           kubectl wait deployment -n tekton-operator tekton-operator-webhook --for condition=Available=True --timeout=90s
           
-          # until "kubectl get ns tekton-pipelines > /dev/null 2>&1"; do
-          #   echo "Namespace `tekton-pipelines` not found yet, waiting..."
-          #   sleep 5
-          # done
+          # Wait till the TektonConfig CR is ready
           kubectl wait tektonconfig config --for condition=Ready=True --timeout=90s
           
+          # Additional control to check if Pipeline, Triggers run
           kubectl wait deployment -n tekton-pipelines tekton-pipelines-controller --for condition=Available=True --timeout=90s
           kubectl wait deployment -n tekton-pipelines tekton-triggers-controller --for condition=Available=True --timeout=90s
           
@@ -76,26 +73,22 @@ jobs:
 
       - name: Install and configure ArgoCD
         run: |
-          # kubectl create namespace argocd
-          # 
-          # cat <<EOF | kubectl apply -n olm -f -
-          # apiVersion: operators.coreos.com/v1alpha1
-          # kind: CatalogSource
-          # metadata:
-          #   name: argocd-catalog
-          # spec:
-          #   sourceType: grpc
-          #   # Version v0.10.0
-          #   image: quay.io/argoprojlabs/argocd-operator-registry@sha256:3f2951534266bc986600601e4bb95812d60342b274e59e58c123f8ef2f07e68b
-          #   displayName: Argo CD Operators
-          #   publisher: Argo CD Community
-          # EOF
-          # 
-          # kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj-labs/argocd-operator/master/deploy/operator_group.yaml
-          # kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj-labs/argocd-operator/master/deploy/subscription.yaml
-          
+          # Install ArgoCD Operator subscription
           kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/argocd/subscription.yaml
+          
+          function csv_succeeded {
+              kubectl get csv argocd-operator.v0.10.0 -o jsonpath='{.status.phase}'
+          }
+          
+          # Loop until the CSV is Succeeded
+          until [[ $(csv_succeeded) == "Succeeded" ]]; do
+              echo "Waiting for CSV 'argocd-operator.v0.10.0' to reach Succeeded phase..."
+              sleep 5
+          done
+          kubectl get po -A
+          
           kubectl wait deployment -n operators argocd-operator-controller-manager --for condition=Available=True --timeout=90s
+          kubectl get po -A
           
           kubectl create ns gitops
           kubectl apply -n gitops -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/argocd/argocd.yaml
