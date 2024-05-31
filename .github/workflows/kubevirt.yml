@@ -98,20 +98,27 @@ jobs:
           chmod +x deploy.sh
           ./deploy.sh
 
-          kubectl create -f https://operatorhub.io/install/community-kubevirt-hyperconverged.yaml
-          kubectl get csv -A
+          #kubectl create -f https://operatorhub.io/install/community-kubevirt-hyperconverged.yaml
+          
+          #function csv_succeeded {
+          #    kubectl get csv xxxxxxx -o jsonpath='{.status.phase}'
+          #}
+          #
+          ## Loop until the CSV is Succeeded
+          #until [[ $(csv_succeeded) == "Succeeded" ]]; do
+          #    echo "Waiting for CSV 'xxxxxx' to reach Succeeded phase..."
+          #    sleep 5
+          #done
+          
+          echo "Get list of deployments ..."
+          kubectl get deployment -A
           sleep 20
-          kubectl get csv -A
           
-          function csv_succeeded {
-              kubectl get csv xxxxxxx -o jsonpath='{.status.phase}'
-          }
+          echo "Get list of deployments ..."
+          kubectl get deployment -A
+          sleep 20
           
-          # Loop until the CSV is Succeeded
-          until [[ $(csv_succeeded) == "Succeeded" ]]; do
-              echo "Waiting for CSV 'xxxxxx' to reach Succeeded phase..."
-              sleep 5
-          done
+          kubectl get HyperConverged -n kubevirt-hyperconverged
           
           #echo "Waiting for KubeVirt to be ready"
           #kubectl wait --for=condition=Available kubevirt kubevirt-hyperconverged --namespace=kubevirt-hyperconverged --timeout=5m
