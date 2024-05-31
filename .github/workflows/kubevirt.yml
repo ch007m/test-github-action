@@ -62,10 +62,9 @@ jobs:
           
           kubectl wait deployment -n tekton-operator tekton-operator --for condition=Available=True --timeout=90s
           kubectl wait deployment -n tekton-operator tekton-operator-webhook --for condition=Available=True --timeout=90s
-          kubectl get po -A
           
-          kubectl apply -f https://raw.githubusercontent.com/tektoncd/operator/$TEKTON_OPERATOR_VERSION/config/crs/kubernetes/config/all/operator_v1alpha1_config_cr.yaml
-          kubectl get po -A
+          kubectl wait deployment -n tekton-pipelines tekton-pipelines-controller --for condition=Available=True --timeout=90s
+          kubectl wait deployment -n tekton-pipelines tekton-triggers-controller --for condition=Available=True --timeout=90s
           
           kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"disable-affinity-assistant":"true"}}'
 
