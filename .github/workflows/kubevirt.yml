@@ -103,7 +103,7 @@ jobs:
           ARGOCD_SERVER=argo-ui.127.0.0.1
           ARGOCD_USER=admin
           
-          curl -H "Host: my-name.localhost" http://127.0.0.1
+          curl -H "Host: argo-ui.localhost" http://127.0.0.1
           
           argocd login --insecure $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PWD --grpc-web
           argocd app list
