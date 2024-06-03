@@ -92,6 +92,11 @@ jobs:
           helm dep update my-chart
   
           kubectl create ns gitops
+          
+          kubectl get nodes
+          kubectl get po -A
+          kubectl get svc -A
+          
           helm install argo-cd ./my-chart -f ./values.yaml -n gitops
           kubectl wait deployment -n gitops argo-cd-argocd-server --for condition=Available=True --timeout=90s
           kubectl wait deployment -n gitops argo-cd-argocd-applicationset-controller --for condition=Available=True --timeout=90s
