@@ -33,7 +33,7 @@ jobs:
           # kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
           
           curl -s -L "https://raw.githubusercontent.com/snowdrop/k8s-infra/main/kind/kind.sh" | bash -s install
-          kubectl wait deployment -n ingress-nginx ingress-nginx-controller --for condition=Available=True --timeout=90s
+          kubectl wait deployment -n ingress ingress-nginx-controller --for condition=Available=True --timeout=90s
 
 #      - name: Log OS, kube tools, container versions
 #        run: |
