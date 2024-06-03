@@ -100,6 +100,11 @@ jobs:
           kubectl get po -A
           kubectl get svc -A
           
+          kubectl logs -n ingress-nginx -ljob-name=ingress-nginx-admission-patch
+          kubectl logs -n ingress-nginx -ljob-name=ingress-nginx-admission-create
+          kubectl logs -n ingress-nginx -lapp.kubernetes.io/instance=ingress-nginx
+          kubectl get events -n ingress-nginx
+          
           helm install argo-cd ./my-chart -f ./values.yaml -n gitops
           kubectl wait deployment -n gitops argo-cd-argocd-server --for condition=Available=True --timeout=90s
           kubectl wait deployment -n gitops argo-cd-argocd-applicationset-controller --for condition=Available=True --timeout=90s
