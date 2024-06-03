@@ -109,12 +109,7 @@ jobs:
           ARGOCD_SERVER=argo-ui.localtest.me
           ARGOCD_USER=admin
           
-          echo "Curl ArgoCD"
-          curl -s -H "Host: argo-ui.localtest.me" http://127.0.0.1
-          
-          echo "List ingress hosts ...."
-          kubectl get ingress -A
-          
+          echo "Logging usiung argocd client to the server ..."
           argocd login -H "Host: argo-ui.localtest.me" --insecure $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PWD --grpc-web
           argocd app list
 
