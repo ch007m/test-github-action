@@ -227,9 +227,6 @@ jobs:
           export GITEA_USERNAME="gitea_admin"
           export GITEA_PASSWORD="gitea_admin"
           
-          echo "### Ping gitea.localtest.me"
-          ping gitea.localtest.me
-          
           export ORG_NAME="dummy"
           curl -kv -X POST \
             "$GITEA_API_URL/v1/orgs" \
