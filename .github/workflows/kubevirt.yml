@@ -225,6 +225,9 @@ jobs:
           echo "#### List Pods ... ###"
           kubectl get po -A
           
+          echo "Logs of the argocd server ..."
+          kubectl logs -n gitops -lapp.kubernetes.io/name=argocd-server
+          
           echo "#### List Services ... ###"
           kubectl get svc -A
           
