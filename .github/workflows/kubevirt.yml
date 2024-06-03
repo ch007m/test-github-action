@@ -110,6 +110,8 @@ jobs:
           ARGOCD_SERVER=argocd.localtest.me
           ARGOCD_USER=admin
           
+          sleep 30s
+          
           echo "Trying again using curl ..."
           curl -vk $ARGOCD_USER http://127.0.0.1
 
