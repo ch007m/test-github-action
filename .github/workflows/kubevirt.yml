@@ -83,10 +83,9 @@ jobs:
   
           kubectl create ns gitops
           
-          kubectl get nodes
-          kubectl get po -A
-          kubectl get svc -A
-          
+          #kubectl get nodes
+          #kubectl get po -A
+          #kubectl get svc -A
           #kubectl logs -n ingress-nginx -ljob-name=ingress-nginx-admission-patch
           #kubectl logs -n ingress-nginx -ljob-name=ingress-nginx-admission-create
           #kubectl logs -n ingress-nginx -lapp.kubernetes.io/instance=ingress-nginx
@@ -112,8 +111,8 @@ jobs:
           ARGOCD_USER=admin
           
           echo "Logging using argocd client to the server ..."
-          argocd login -H "Host: argocd.localtest.me" --insecure $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PWD --grpc-web
-          argocd app list
+          argocd -H "Host: argocd.localtest.me" login --insecure $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PWD --grpc-web
+          #argocd -H "Host: argocd.localtest.me" app list
 
       - name: Install Kubevirt
         run: |
