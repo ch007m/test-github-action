@@ -227,15 +227,18 @@ jobs:
           export GITEA_USERNAME="gitea_admin"
           export GITEA_PASSWORD="gitea_admin"
           
+          echo "### Ping gitea.localtest.me"
+          ping gitea.localtest.me
+          
           export ORG_NAME="dummy"
-          curl -ks -X POST \
+          curl -kv -X POST \
             "$GITEA_API_URL/v1/orgs" \
             -H 'accept: application/json' \
             -H 'Content-Type: application/json' \
             -u "$GITEA_USERNAME:$GITEA_PASSWORD" \
             -d '{"username": "'"$ORG_NAME"'"}'
           
-          curl -ks -X GET \
+          curl -kv -X GET \
             "$GITEA_API_URL/v1/orgs/$ORG_NAME" \
             -H 'accept: application/json' \
             -H 'Content-Type: application/json' \
