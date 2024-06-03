@@ -102,17 +102,17 @@ jobs:
           kubectl wait deployment -n gitops argo-cd-argocd-applicationset-controller --for condition=Available=True --timeout=90s
           
           echo "Update /etc/hosts"
-          echo "127.0.0.1 argo-ui.localtest.me" | sudo tee -a /etc/hosts
+          echo "127.0.0.1 argocd.localtest.me" | sudo tee -a /etc/hosts
           
           echo "Get Argocd admin secret"
           ARGOCD_PWD=$(kubectl get secret/argocd-initial-admin-secret -n gitops -ojson | jq -r '.data.password' | base64 -d)
           echo "Argocd password: $ARGOCD_PWD. End"
           
-          ARGOCD_SERVER=argo-ui.localtest.me
+          ARGOCD_SERVER=argocd.localtest.me
           ARGOCD_USER=admin
           
           echo "Logging using argocd client to the server ..."
-          argocd login -H "Host: argo-ui.localtest.me" --insecure $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PWD --grpc-web
+          argocd login -H "Host: argocd.localtest.me" --insecure $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PWD --grpc-web
           argocd app list
 
       - name: Install Kubevirt
