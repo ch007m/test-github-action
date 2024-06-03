@@ -102,7 +102,7 @@ jobs:
           kubectl wait deployment -n gitops argo-cd-argocd-applicationset-controller --for condition=Available=True --timeout=90s
           
           echo "Update /etc/hosts"
-          sudo echo "127.0.0.1  argo-ui.local" >> /etc/hosts
+          sudo echo "127.0.0.1 argo-ui.local" >> /etc/hosts
           
           echo "Get Argocd admin secret"
           ARGOCD_PWD=$(kubectl get secret/argocd-initial-admin-secret -n gitops -ojson | jq -r '.data.password' | base64 -d)
