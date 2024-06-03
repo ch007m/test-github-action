@@ -31,6 +31,8 @@ jobs:
           kind create cluster
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
           kubectl wait deployment -n ingress-nginx ingress-nginx-controller --for condition=Available=True --timeout=90s
+          kubectl wait pod -n ingress-nginx -ljob-name=ingress-nginx-admission-patch --for condition=PodReadyToStartContainers=false --timeout=90s
+          kubectl wait pod -n ingress-nginx -ljob-name=ingress-nginx-admission-create --for condition=PodReadyToStartContainers=false --timeout=90s
 
 #      - name: Log OS, kube tools, container versions
 #        run: |
