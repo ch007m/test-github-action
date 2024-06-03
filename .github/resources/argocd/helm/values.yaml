@@ -7,7 +7,7 @@ argo-cd:
     enabled: true
   server:
     ingress:
-      enabled: false
+      enabled: true
       hostname: 'argo-ui.local'
     extraArgs:
       - --insecure
