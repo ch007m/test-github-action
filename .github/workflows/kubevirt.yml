@@ -100,7 +100,7 @@ jobs:
           ARGOCD_PWD=$(kubectl get secret/argocd-initial-admin-secret -n gitops -ojson | jq -r '.data.password' | base64 -d)
           echo "Argocd password: $ARGOCD_PWD. End"
           
-          ARGOCD_SERVER=argo-ui.127.0.0.1.nip.io
+          ARGOCD_SERVER=argo-ui.127.0.0.1
           ARGOCD_USER=admin
           
           argocd login --insecure $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PWD --grpc-web
