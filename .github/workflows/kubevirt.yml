@@ -35,26 +35,17 @@ jobs:
           curl -s -L "https://raw.githubusercontent.com/snowdrop/k8s-infra/main/kind/kind.sh" | bash -s install
           kubectl wait deployment -n ingress ingress-nginx-controller --for condition=Available=True --timeout=90s
 
-      - name: Install OLM
-        run: |
-          curl -sL https://github.com/operator-framework/operator-lifecycle-manager/releases/download/$OLM_VERSION/install.sh -o install.sh
-          chmod +x install.sh
-          ./install.sh $OLM_VERSION
+      #- name: Install OLM
+      #  run: |
+      #    curl -sL https://github.com/operator-framework/operator-lifecycle-manager/releases/download/$OLM_VERSION/install.sh -o install.sh
+      #    chmod +x install.sh
+      #    ./install.sh $OLM_VERSION
 
       - name: Install Argocd client
         run: |
-           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
-           rm argocd-linux-amd64
-#
-#      - name : Install Tekton
-#        run: |
-#          kubectl apply -f https://github.com/tektoncd/pipeline/releases/download/${TEKTON_VERSION}/release.yaml
-#          kubectl wait deployment -n tekton-pipelines tekton-pipelines-controller --for condition=Available=True --timeout=90s
-#          kubectl wait deployment -n tekton-pipelines tekton-pipelines-webhook --for condition=Available=True --timeout=90s
-#
-#          echo "Disabling the affinity-assistant to avoid the error: more than one PersistentVolumeClaim is bound to a TaskRun = pod"
-#          kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"disable-affinity-assistant":"true"}}'
+          curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+          rm argocd-linux-amd64
 
       - name: Install and configure ArgoCD
         run: |
@@ -82,18 +73,6 @@ jobs:
           helm dep update my-chart
   
           kubectl create ns gitops
-          
-          #kubectl get nodes
-          #kubectl get po -A
-          #kubectl get svc -A
-          #kubectl logs -n ingress-nginx -ljob-name=ingress-nginx-admission-patch
-          #kubectl logs -n ingress-nginx -ljob-name=ingress-nginx-admission-create
-          #kubectl logs -n ingress-nginx -lapp.kubernetes.io/instance=ingress-nginx
-          #kubectl get events -n ingress-nginx
-          
-          #kubectl get events -n ingress
-          #kubectl logs -n ingress -lapp.kubernetes.io/instance=ingress
-          
           helm install argo-cd ./my-chart -f ./values.yaml -n gitops
         
           kubectl wait pod -n gitops -lapp.kubernetes.io/name=argocd-redis --for condition=Ready --timeout=90s
@@ -103,22 +82,14 @@ jobs:
           
           echo "Update /etc/hosts"
           echo "127.0.0.1 argocd.localtest.me" | sudo tee -a /etc/hosts
-          
-          echo "Get Argocd admin secret"
-          ARGOCD_PWD=$(kubectl get secret/argocd-initial-admin-secret -n gitops -ojson | jq -r '.data.password' | base64 -d)
-          echo "Argocd password: $ARGOCD_PWD. End"
-          
-          ARGOCD_SERVER=argocd.localtest.me
-          ARGOCD_USER=admin
-          
-          sleep 20s
-          
-          #echo "Trying using curl ..."
-          #curl -v $ARGOCD_USER http://$ARGOCD_SERVER
 
-          echo "Logging using argocd client to the server ..."
-          argocd login --insecure $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PWD --grpc-web
-          argocd app list
+      - name : Install Tekton
+        run: |
+          kubectl apply -f https://github.com/tektoncd/pipeline/releases/download/${TEKTON_VERSION}/release.yaml
+          kubectl wait deployment -n tekton-pipelines tekton-pipelines-controller --for condition=Available=True --timeout=90s
+          kubectl wait deployment -n tekton-pipelines tekton-pipelines-webhook --for condition=Available=True --timeout=90s
+          echo "Disabling the affinity-assistant to avoid the error: more than one PersistentVolumeClaim is bound to a TaskRun = pod"
+          kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"disable-affinity-assistant":"true"}}'
 
       - name: Install Kubevirt
         run: |
@@ -191,9 +162,20 @@ jobs:
       #          echo "########### Kubevirt version: $KUBEVIRT_VERSION ###########"
       #
 
-      - name: Check pods ...
+      - name: Log on to ArgoCD Server
         run: |
-          kubectl get pod -A
+          echo "Get Argocd admin secret"
+          ARGOCD_PWD=$(kubectl get secret/argocd-initial-admin-secret -n gitops -ojson | jq -r '.data.password' | base64 -d)
+          echo "Argocd password: $ARGOCD_PWD. End"
+
+          ARGOCD_SERVER=argocd.localtest.me
+          ARGOCD_USER=admin
+
+          echo "Logging using argocd client to the server ..."
+          argocd login --insecure $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PWD --grpc-web
+          
+          echo "List the application ... should be empty"
+          argocd app list
 
       - name: Wait till podman remote replies
         run: |
