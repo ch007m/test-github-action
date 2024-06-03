@@ -30,6 +30,7 @@ jobs:
           # curl -s -L "https://raw.githubusercontent.com/snowdrop/k8s-infra/main/kind/kind.sh" | bash -s install --ingress-ports 80:33080 --ingress-ports 443:33443
           kind create cluster
           kubectl apply -f https://raw.githubusercontent.com/kubernetes/ingress-nginx/main/deploy/static/provider/kind/deploy.yaml
+          kubectl wait deployment -n ingress-nginx deployment/ingress-nginx-controller --for condition=Available=True --timeout=90s
 
 #      - name: Log OS, kube tools, container versions
 #        run: |
