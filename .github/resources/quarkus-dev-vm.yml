@@ -19,7 +19,7 @@ spec:
               storage: 11Gi
         source:
           pvc:
-            namespace: default
+            namespace: vm-images
             name: podman-remote
   running: true
   template:

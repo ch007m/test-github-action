@@ -118,13 +118,11 @@ jobs:
           
           echo "Waiting for KubeVirt to be ready"
           kubectl wait --for=condition=Available kubevirt kubevirt --namespace=kubevirt --timeout=5m
-          
-          echo "Patch the StorageProfile to use the storageclass standard and give ReadWrite access"
-          kubectl get StorageProfile
-          kubectl patch --type merge -p '{"spec": {"claimPropertySets": [{"accessModes": ["ReadWriteOnce"], "volumeMode": "Filesystem"}]}}' StorageProfile standard
 
       - name: Give more RBAC to Virt resources and RW for PVC
         run: |
+          echo "Patch the StorageProfile to use the storageclass standard and give ReadWrite access"
+          kubectl get StorageProfile
           kubectl patch --type merge -p '{"spec": {"claimPropertySets": [{"accessModes": ["ReadWriteOnce"], "volumeMode": "Filesystem"}]}}' StorageProfile standard
 
           kubectl create clusterrolebinding pod-kubevirt-viewer --clusterrole=kubevirt.io:view --serviceaccount=default:default
