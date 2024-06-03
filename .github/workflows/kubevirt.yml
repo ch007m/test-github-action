@@ -45,28 +45,28 @@ jobs:
           
           echo "########### Kubevirt version: $KUBEVIRT_VERSION ###########"
 
-      - name: Install OLM
-        run: |
-          curl -sL https://github.com/operator-framework/operator-lifecycle-manager/releases/download/$OLM_VERSION/install.sh -o install.sh
-          chmod +x install.sh
-          ./install.sh $OLM_VERSION
+#      - name: Install OLM
+#        run: |
+#          curl -sL https://github.com/operator-framework/operator-lifecycle-manager/releases/download/$OLM_VERSION/install.sh -o install.sh
+#          chmod +x install.sh
+#          ./install.sh $OLM_VERSION
+#
+#      - name: Install Argocd client
+#        run: |
+#           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+#           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+#           rm argocd-linux-amd64
+#
+#      - name : Install Tekton
+#        run: |
+#          kubectl apply -f https://github.com/tektoncd/pipeline/releases/download/${TEKTON_VERSION}/release.yaml
+#          kubectl wait deployment -n tekton-pipelines tekton-pipelines-controller --for condition=Available=True --timeout=90s
+#          kubectl wait deployment -n tekton-pipelines tekton-pipelines-webhook --for condition=Available=True --timeout=90s
+#
+#          echo "Disabling the affinity-assistant to avoid the error: more than one PersistentVolumeClaim is bound to a TaskRun = pod"
+#          kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"disable-affinity-assistant":"true"}}'
 
-      - name: Install Argocd client
-        run: |
-           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
-           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
-           rm argocd-linux-amd64
-
-      - name : Install Tekton
-        run: |
-          kubectl apply -f https://github.com/tektoncd/pipeline/releases/download/${TEKTON_VERSION}/release.yaml
-          kubectl wait deployment -n tekton-pipelines tekton-pipelines-controller --for condition=Available=True --timeout=90s
-          kubectl wait deployment -n tekton-pipelines tekton-pipelines-webhook --for condition=Available=True --timeout=90s
-          
-          echo "Disabling the affinity-assistant to avoid the error: more than one PersistentVolumeClaim is bound to a TaskRun = pod"
-          kubectl patch cm feature-flags -n tekton-pipelines -p '{"data":{"disable-affinity-assistant":"true"}}'
-
-      - name: Install and configure ArgoCD using OLM
+      - name: Install and configure ArgoCD
         run: |
           # Install ArgoCD Operator subscription
           # kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/argocd/subscription.yaml
@@ -95,6 +95,9 @@ jobs:
           helm install argo-cd ./my-chart -f ./values.yaml -n gitops
           kubectl wait deployment -n gitops argo-cd-argocd-server --for condition=Available=True --timeout=90s
           kubectl wait deployment -n gitops argo-cd-argocd-applicationset-controller --for condition=Available=True --timeout=90s
+          
+          sudo echo "argo-ui.127.0.0.1 127.0.0.1" >> /etc/hosts
+          sudo echo "argo-ui.localhost 127.0.0.1" >> /etc/hosts
           
           # Get admin secret
           ARGOCD_PWD=$(kubectl get secret/argocd-initial-admin-secret -n gitops -ojson | jq -r '.data.password' | base64 -d)
