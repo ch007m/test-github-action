@@ -1,0 +1,43 @@
+redis-cluster:
+  enabled: false
+postgresql:
+  enabled: false
+postgresql-ha:
+  enabled: false
+
+persistence:
+  enabled: false
+
+gitea:
+  admin:
+    username: "gitea_admin"
+    password: "gitea_admin"
+    email: "gi@tea.com"
+  config:
+    database:
+      DB_TYPE: sqlite3
+    session:
+      PROVIDER: memory
+    cache:
+      ADAPTER: memory
+    queue:
+      TYPE: level
+
+service:
+  ssh:
+    type: NodePort
+    nodePort: 32222
+    externalTrafficPolicy: Local
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: gitea.localtest.me
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - secretName: gitea-tls
+      hosts:
+        - gitea.localtest.me
