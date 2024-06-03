@@ -223,7 +223,7 @@ jobs:
 
       - name: Create a git org to test
         run: |
-          export GITEA_API_URL="https://gitea.localtest.me/api"
+          export GITEA_API_URL="http://gitea.localtest.me/api"
           export GITEA_USERNAME="gitea_admin"
           export GITEA_PASSWORD="gitea_admin"
           
