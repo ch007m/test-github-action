@@ -76,7 +76,8 @@ jobs:
           done
 
           # Create the gitops namespace and deploy the argocd instance0s
-          
+          kubectl create ns gitops
+          kubectl apply -n gitops -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/argocd/argocd.yaml
           kubectl wait deployment -n gitops argocd-gitops-server --for condition=Available=True --timeout=90s
           kubectl wait deployment -n gitops argocd-gitops-applicationset-controller --for condition=Available=True --timeout=90s
 
