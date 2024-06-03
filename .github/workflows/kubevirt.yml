@@ -112,8 +112,8 @@ jobs:
           
           sleep 30s
           
-          echo "Trying again using curl ..."
-          curl -vk $ARGOCD_USER http://127.0.0.1
+          echo "Trying using curl ..."
+          curl -v $ARGOCD_USER http://$ARGOCD_SERVER
 
           echo "Logging using argocd client to the server ..."
           argocd login --insecure $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PWD --grpc-web
