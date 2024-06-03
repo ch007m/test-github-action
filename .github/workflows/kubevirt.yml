@@ -223,19 +223,19 @@ jobs:
 
       - name: Create a git org to test
         run: |
-          export GITEA_API_URL="http://gitea.localtest.me/api"
+          export GITEA_API_URL="https://gitea.localtest.me/api"
           export GITEA_USERNAME="gitea_admin"
           export GITEA_PASSWORD="gitea_admin"
           
           export ORG_NAME="dummy"
-          curl -kv -X POST \
+          curl -ks \
             "$GITEA_API_URL/v1/orgs" \
             -H 'accept: application/json' \
             -H 'Content-Type: application/json' \
             -u "$GITEA_USERNAME:$GITEA_PASSWORD" \
             -d '{"username": "'"$ORG_NAME"'"}'
           
-          curl -kv -X GET \
+          curl -ks \
             "$GITEA_API_URL/v1/orgs/$ORG_NAME" \
             -H 'accept: application/json' \
             -H 'Content-Type: application/json' \
