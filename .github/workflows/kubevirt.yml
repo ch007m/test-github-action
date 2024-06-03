@@ -87,7 +87,7 @@ jobs:
           # kubectl wait deployment -n gitops argocd-gitops-server --for condition=Available=True --timeout=90s
           # kubectl wait deployment -n gitops argocd-gitops-applicationset-controller --for condition=Available=True --timeout=90s
           
-          cd resources/argocd/helm
+          cd .github/resources/argocd/helm
           helm repo add argo-cd https://argoproj.github.io/argo-helm
           helm dep update my-chart
   
