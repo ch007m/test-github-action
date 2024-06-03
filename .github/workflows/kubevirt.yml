@@ -97,6 +97,7 @@ jobs:
           
           helm install argo-cd ./my-chart -f ./values.yaml -n gitops
           kubectl wait deployment -n gitops argo-cd-argocd-server --for condition=Available=True --timeout=90s
+          kubectl wait deployment -n gitops argo-cd-argocd-application-controller --for condition=Available=True --timeout=90s
           kubectl wait deployment -n gitops argo-cd-argocd-applicationset-controller --for condition=Available=True --timeout=90s
           
           echo "Update /etc/hosts"
@@ -109,7 +110,7 @@ jobs:
           ARGOCD_SERVER=argo-ui.localtest.me
           ARGOCD_USER=admin
           
-          echo "Logging usiung argocd client to the server ..."
+          echo "Logging using argocd client to the server ..."
           argocd login -H "Host: argo-ui.localtest.me" --insecure $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PWD --grpc-web
           argocd app list
 
@@ -221,3 +222,6 @@ jobs:
           
           echo "#### List Services ... ###"
           kubectl get svc -A
+          
+          echo "#### List Ingress ... ###"
+          kubectl get ingress -A
