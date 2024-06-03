@@ -214,58 +214,14 @@ jobs:
             kubectl create ns gitea
             kubectl -n gitea create secret tls gitea-tls --cert=gitea-localtest-me.pem --key=gitea-localtest-me.key
             
-            cat <<EOF > values.yml
-            redis-cluster:
-              enabled: false
-            postgresql:
-              enabled: false
-            postgresql-ha:
-              enabled: false
-            
-            persistence:
-              enabled: false
-            
-            gitea:
-              admin:
-                username: "gitea_admin"
-                password: "gitea_admin"
-                email: "gi@tea.com"
-              config:
-                database:
-                  DB_TYPE: sqlite3
-                session:
-                  PROVIDER: memory
-                cache:
-                  ADAPTER: memory
-                queue:
-                  TYPE: level
-            
-            service:
-              ssh:
-                type: NodePort
-                nodePort: 32222
-                externalTrafficPolicy: Local
-            
-            ingress:
-              enabled: true
-              className: nginx
-              hosts:
-                - host: gitea.localtest.me
-                  paths:
-                    - path: /
-                      pathType: Prefix
-              tls:
-                - secretName: gitea-tls
-                  hosts:
-                    - gitea.localtest.me
-            EOF
             
             helm repo add gitea-charts https://dl.gitea.com/charts/
             helm repo update
             
-            helm install gitea gitea-charts/gitea -n gitea -f values.yml
+            helm install gitea gitea-charts/gitea -n gitea -f https://github.com/ch007m/test-github-action/blob/main/.github/resources/gitea/values.yml
           
             echo "127.0.0.1 gitea.localtest.me" | sudo tee -a /etc/hosts
+
       - name: Create a git org to test
         run: |
           export GITEA_API_URL="https://gitea.localtest.me/api"
