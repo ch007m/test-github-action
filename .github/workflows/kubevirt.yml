@@ -110,9 +110,12 @@ jobs:
           ARGOCD_SERVER=argocd.localtest.me
           ARGOCD_USER=admin
           
+          echo "Trying again using curl ..."
+          curl -vk $ARGOCD_USER http://127.0.0.1
+
           echo "Logging using argocd client to the server ..."
-          argocd -H "Host: argocd.localtest.me" login --insecure $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PWD --grpc-web
-          #argocd -H "Host: argocd.localtest.me" app list
+          argocd login --insecure $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PWD --grpc-web
+          #argocd app list
 
       - name: Install Kubevirt
         run: |
