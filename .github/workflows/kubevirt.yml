@@ -110,14 +110,14 @@ jobs:
           ARGOCD_SERVER=argocd.localtest.me
           ARGOCD_USER=admin
           
-          sleep 30s
+          sleep 20s
           
-          echo "Trying using curl ..."
-          curl -v $ARGOCD_USER http://$ARGOCD_SERVER
+          #echo "Trying using curl ..."
+          #curl -v $ARGOCD_USER http://$ARGOCD_SERVER
 
           echo "Logging using argocd client to the server ..."
           argocd login --insecure $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PWD --grpc-web
-          #argocd app list
+          argocd app list
 
       - name: Install Kubevirt
         run: |
@@ -233,3 +233,9 @@ jobs:
           
           echo "#### List Ingress ... ###"
           kubectl get ingress -A
+          
+          echo "#### Get VM ... ###"
+          kubectl get vm -A
+          
+          echo "#### Get VMI ... ###"
+          kubectl get vmi -A
