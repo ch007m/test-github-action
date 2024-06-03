@@ -109,7 +109,8 @@ jobs:
           #kubectl get events -n ingress-nginx
           
           kubectl get events -n ingress
-          kubectl logs -n ingress -lapp.kubernetes.io/instance: ingress-nginx
+          kubectl logs -n ingress -lapp.kubernetes.io/instance=ingress
+          
           helm install argo-cd ./my-chart -f ./values.yaml -n gitops
           kubectl wait deployment -n gitops argo-cd-argocd-server --for condition=Available=True --timeout=90s
           kubectl wait deployment -n gitops argo-cd-argocd-applicationset-controller --for condition=Available=True --timeout=90s
