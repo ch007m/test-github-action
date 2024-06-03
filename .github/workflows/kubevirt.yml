@@ -51,6 +51,12 @@ jobs:
           chmod +x install.sh
           ./install.sh $OLM_VERSION
 
+      - name: Install Argocd client
+        run: |
+           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+           rm argocd-linux-amd64
+
       - name : Install Tekton
         run: |
           kubectl apply -f https://github.com/tektoncd/pipeline/releases/download/${TEKTON_VERSION}/release.yaml
@@ -63,23 +69,42 @@ jobs:
       - name: Install and configure ArgoCD using OLM
         run: |
           # Install ArgoCD Operator subscription
-          kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/argocd/subscription.yaml
+          # kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/argocd/subscription.yaml
           
-          function csv_succeeded {
-              kubectl get csv argocd-operator.${ARGOCD_VERSION} -o jsonpath='{.status.phase}'
-          }
+          # function csv_succeeded {
+          #     kubectl get csv argocd-operator.${ARGOCD_VERSION} -o jsonpath='{.status.phase}'
+          # }
+          # 
+          # # Loop until the CSV is Succeeded
+          # until [[ $(csv_succeeded) == "Succeeded" ]]; do
+          #     echo "Waiting for CSV 'argocd-operator.${ARGOCD_VERSION}' to reach Succeeded phase..."
+          #     sleep 5
+          # done
+          # 
+          # # Create the gitops namespace and deploy the argocd instance
+          # kubectl create ns gitops
+          # kubectl apply -n gitops -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/argocd/argocd.yaml
+          # kubectl wait deployment -n gitops argocd-gitops-server --for condition=Available=True --timeout=90s
+          # kubectl wait deployment -n gitops argocd-gitops-applicationset-controller --for condition=Available=True --timeout=90s
           
-          # Loop until the CSV is Succeeded
-          until [[ $(csv_succeeded) == "Succeeded" ]]; do
-              echo "Waiting for CSV 'argocd-operator.${ARGOCD_VERSION}' to reach Succeeded phase..."
-              sleep 5
-          done
-
-          # Create the gitops namespace and deploy the argocd instance0s
+          cd resources/argocd/helm
+          helm repo add argo-cd https://argoproj.github.io/argo-helm
+          helm dep update my-chart
+  
           kubectl create ns gitops
-          kubectl apply -n gitops -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/argocd/argocd.yaml
-          kubectl wait deployment -n gitops argocd-gitops-server --for condition=Available=True --timeout=90s
-          kubectl wait deployment -n gitops argocd-gitops-applicationset-controller --for condition=Available=True --timeout=90s
+          helm install argo-cd ./my-chart -f ./values.yaml -n gitops
+          kubectl wait deployment -n gitops argo-cd-argocd-server --for condition=Available=True --timeout=90s
+          kubectl wait deployment -n gitops argo-cd-argocd-applicationset-controller --for condition=Available=True --timeout=90s
+          
+          # Get admin secret
+          ARGOCD_PWD=$(kubectl get secret/argocd-initial-admin-secret -n gitops -ojson | jq -r '.data.password' | base64 -d)
+          echo "Argocd password: $ARGOCD_PWD. End"
+          
+          ARGOCD_SERVER=argo-ui.127.0.0.1.nip.io
+          ARGOCD_USER=admin
+          
+          argocd login --insecure $ARGOCD_SERVER --username $ARGOCD_USER --password $ARGOCD_PWD --grpc-web
+          argocd app list
 
       - name: Install Kubevirt
         run: |
