@@ -95,10 +95,11 @@ jobs:
           #kubectl logs -n ingress -lapp.kubernetes.io/instance=ingress
           
           helm install argo-cd ./my-chart -f ./values.yaml -n gitops
-          kubectl wait deployment -n gitops argo-cd-argocd-server --for condition=Available=True --timeout=90s
-          kubectl wait deployment -n gitops argo-cd-argocd-redis --for condition=Available=True --timeout=90s
-          kubectl wait deployment -n gitops argo-cd-argocd-repo-server --for condition=Available=True --timeout=90s
-          kubectl wait deployment -n gitops argo-cd-argocd-applicationset-controller --for condition=Available=True --timeout=90s
+        
+          kubectl wait pod -n gitops -lapp.kubernetes.io/name=argocd-redis --for condition=Ready --timeout=90s
+          kubectl wait pod -n gitops -lapp.kubernetes.io/name=argocd-repo-server --for condition=Ready --timeout=90s
+          kubectl wait pod -n gitops -lapp.kubernetes.io/name=argocd-server --for condition=Ready --timeout=90s
+          kubectl wait pod -n gitops -lapp.kubernetes.io/name=argocd-applicationset-controller --for condition=Ready --timeout=90s
           
           echo "Update /etc/hosts"
           echo "127.0.0.1 argocd.localtest.me" | sudo tee -a /etc/hosts
