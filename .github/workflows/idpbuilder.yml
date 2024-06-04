@@ -52,6 +52,8 @@ jobs:
           ARGO_USERNAME=admin
           ARGO_SERVER=argocd.cnoe.localtest.me:8443
           argocd --insecure login $ARGO_SERVER --username $ARGO_ADMIN --password $ARGO_PASSWORD
+          
+          echo "$ARGO_SERVER" >> "$GITHUB_ENV"
 
       - name: Create an Argo Application to deploy Tekton
         run: |
@@ -61,7 +63,7 @@ jobs:
             --path config \
             --directory-recurse \
             --insecure \
-            --server argocd.cnoe.localtest.me:8443 \
+            --server $ARGO_SERVER \
             --dest-server https://kubernetes.default.svc \
             --dest-namespace tekton \
             --sync-policy auto
