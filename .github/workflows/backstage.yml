@@ -124,6 +124,8 @@ jobs:
           
           export $(grep -v '^#' backstage_env_secret.env | xargs)
           envsubst < manifest/templates/app-config.qshift.tmpl > app-config.local.yaml
+          
+          cat app-config.local.yaml
 
       #- name: Override URLs
       #  uses: mikefarah/yq@v4
