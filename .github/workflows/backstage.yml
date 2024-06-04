@@ -38,14 +38,21 @@ jobs:
           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
           rm argocd-linux-amd64
 
+      - name: Set idp env var
+        run: |
+          GITEA_PASSWORD=$(get secret/gitea-credential -n gitea -ojson | jq -r '.data.password' | base64 -d)
+          GITEA_USERNAME=$(kubectl get secret/gitea-credential -n gitea -ojson | jq -r '.data.username' | base64 -d)
+          echo "GITEA_PASSWORD=$GITEA_PASSWORD" >> "$GITHUB_ENV"
+          echo "GITEA_USERNAME=$GITEA_USERNAME" >> "$GITHUB_ENV"
+  
+          ARGO_PASSWORD=$(kubectl get secret/argocd-initial-admin-secret -n argocd -ojson | jq -r '.data.password' | base64 -d)
+          echo "ARGO_PASSWORD=$ARGO_PASSWORD" >> "$GITHUB_ENV"
+          echo "ARGO_SERVER=argocd.cnoe.localtest.me:8443" >> "$GITHUB_ENV"
+          echo "ARGO_USERNAME=admin" >> "$GITHUB_ENV"
+
       - name: Logon to argocd server
         run: |
-          ARGO_PASSWORD=$(kubectl get secret/argocd-initial-admin-secret -n argocd -ojson | jq -r '.data.password' | base64 -d)
-          ARGO_USERNAME=admin
-          ARGO_SERVER=argocd.cnoe.localtest.me:8443
           argocd --insecure login $ARGO_SERVER --username $ARGO_USERNAME --password $ARGO_PASSWORD
-          
-          echo "ARGO_SERVER=argocd.cnoe.localtest.me:8443" >> "$GITHUB_ENV"
 
       - name: Checkout QShift backstage playground
         uses: actions/checkout@v4
@@ -94,9 +101,9 @@ jobs:
           
           TEMPLATE_URL=https://github.com/q-shift/backstage-playground/blob/main/locations/root.yaml
           
-          ARGOCD_SERVER=$ARGOCD_SERVER
-          ARGOCD_ADMIN_USER=admin
-          ARGOCD_ADMIN_PASSWORD=$(kubectl get secret/argocd-initial-admin-secret -n argocd -ojson | jq -r '.data.password' | base64 -d)
+          ARGOCD_SERVER=$ARGO_SERVER
+          ARGOCD_ADMIN_USER=$ARGO_USERNAME
+          ARGOCD_ADMIN_PASSWORD=$ARGO_PASSWORD
           
           KUBERNETES_API_URL=$API_URL
           SERVICE_ACCOUNT_TOKEN=$(kubectl get secret backstage-secret -o json | jq -r '.data.token' | base64 -d)
@@ -104,6 +111,14 @@ jobs:
           
           export $(grep -v '^#' backstage_env_secret.env | xargs)
           envsubst < manifest/templates/app-config.qshift.tmpl > app-config.local.yaml
+          
+          cat <<EOF >> app-config.local.yaml
+          integrations:
+            gitea:
+              - host: gitea.localtest.me:8443
+                username: $GITEA_USERNAME
+                password: $GITEA_PASSWORD
+          EOF
           
           cat app-config.local.yaml
 
