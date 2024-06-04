@@ -51,13 +51,6 @@ jobs:
         run: |
           argocd app list  
 
-  #qshift-backstage-playground:
-  #  runs-on: ubuntu-latest
-  #  # if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'qshift') }}
-  #  steps:
-  #    - name: Checkout
-  #      uses: actions/checkout@v4
-
       - name: Checkout QShift backstage playground
         uses: actions/checkout@v4
         with:
@@ -81,9 +74,35 @@ jobs:
           yarn tsc
           yarn build:all
 
+      - name: Grab node IP/Port
+        run: |
+          kubectl get nodes -oyaml
+          cat ~/.kube/config
+
+      - name: Configure app-config.local.yaml file
+        working-directory: backstage-playground
+        run: |
+          cat <<EOF > backstage_env_secret.env
+          APP_BASE_URL=http://localhost:3000
+          BACKEND_BASE_URL=http://localhost:7007
+          
+          BACKSTAGE_AUTH_SECRET=$(node -p 'require("crypto").randomBytes(24).toString("base64")'
+          
+          TEMPLATE_URL=https://github.com/q-shift/backstage-playground/blob/main/locations/root.yaml
+          
+          ARGOCD_SERVER=$ARGOCD_SERVER
+          ARGOCD_ADMIN_USER=admin
+          ARGOCD_ADMIN_PASSWORD=$(kubectl get secret/argocd-initial-admin-secret -n argocd -ojson | jq -r '.data.password' | base64 -d)
+          
+          KUBERNETES_API_URL=https://api.:6443
+          SERVICE_ACCOUNT_TOKEN=$(kubectl get secret backstage-secret -o json | jq -r '.data.token' | base64 -d)
+          EOF
+          
+          export $(grep -v '^#' backstage_env_secret.env | xargs)
+          envsubst < manifest/templates/app-config.qshift.tmpl > app-config.local.yaml
+
       - name: Launch backstage
         working-directory: backstage-playground
         run: |
-          touch app-config.local.yaml
           yarn workspace app start &
           yarn workspace backend start
