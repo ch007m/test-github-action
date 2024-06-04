@@ -127,7 +127,12 @@ jobs:
                 username: $GITEA_USERNAME
                 password: $GITEA_PASSWORD
           EOF
-          
+          cat app-config.local.yaml
+
+      - name: Override backstage URLs
+        working-directory: backstage-playground
+        run: |   
+          yq -V
           yq e '.app.baseUrl = "http://localhost:3000"' -i app-config.local.yaml
           yq e '.backend.baseUrl = "http://localhost:7007"' -i app-config.local.yaml
           yq e '.backend.cors.origin = "http://localhost:7007"' -i app-config.local.yaml
