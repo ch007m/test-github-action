@@ -32,3 +32,7 @@ jobs:
           ./idpbuilder version
           
           sudo mv ./idpbuilder /usr/local/bin/
+
+      - name: Create an IDP cluster
+        run: |    
+          idpbuilder create
