@@ -12,7 +12,7 @@ spec:
   source:
     repoURL: cnoe://manifests
     targetRevision: HEAD
-    path: "."
+    path: "v0.60"
   project: default
   syncPolicy:
     automated:
