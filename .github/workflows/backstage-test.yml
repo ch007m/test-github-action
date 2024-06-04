@@ -1,4 +1,4 @@
-name: Install and run backstage
+name: Test YQ
 
 on:
   workflow_dispatch:
