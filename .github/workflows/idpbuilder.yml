@@ -35,7 +35,7 @@ jobs:
 
           idpbuilder version
 
-      - name: Create an IDP cluster
+      - name: Create an IDP cluster and install the packages
         run: |    
           idpbuilder create -p .github/resources/idp/packages/tekton
 
