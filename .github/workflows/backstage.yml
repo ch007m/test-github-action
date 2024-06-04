@@ -13,7 +13,7 @@ env:
 jobs:
   setup-idp:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'idp') }}
+    if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'qshift') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -67,7 +67,7 @@ jobs:
         with:
           node-version: 20.x
 
-      - uses: Get kubernetes Secret Token
+      - name: Get kubernetes Secret Token
         run: |
           kubectl create sa my-backstage 
           kubectl get secret $(kubectl get secret | grep my-backstage-token | cut -f1 -d " ") -o go-template='{{.data.token | base64decode}}'"
