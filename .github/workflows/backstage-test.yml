@@ -24,45 +24,19 @@ jobs:
           sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/$YQ_VERSION/yq_linux_amd64
           sudo chmod +x /usr/local/bin/yq
 
-      - name: Checkout QShift backstage playground
-        uses: actions/checkout@v4
-        with:
-          repository: q-shift/backstage-playground
-          path: backstage-playground
-
       - name: Configure app-config.local.yaml file
-        working-directory: backstage-playground
         run: |
-          cat <<EOF > backstage_env_secret.env
-          APP_BASE_URL=http://localhost:3000
-          BACKEND_BASE_URL=http://localhost:7007
-          
-          BACKSTAGE_AUTH_SECRET=$BACKSTAGE_AUTH_SECRET
-          
-          TEMPLATE_URL=https://github.com/q-shift/backstage-playground/blob/main/locations/root.yaml
-          
-          ARGOCD_SERVER=$ARGO_SERVER
-          ARGOCD_ADMIN_USER=$ARGO_USERNAME
-          ARGOCD_ADMIN_PASSWORD=$ARGO_PASSWORD
-          
-          KUBERNETES_API_URL=$API_URL
-          SERVICE_ACCOUNT_TOKEN=$SERVICE_ACCOUNT_TOKEN
-          EOF
-          
-          export $(grep -v '^#' backstage_env_secret.env | xargs)
-          envsubst < manifest/templates/app-config.qshift.tmpl > app-config.local.yaml
-          
-          cat <<EOF >> app-config.local.yaml
-          integrations:
-            gitea:
-              - host: gitea.localtest.me:8443
-                username: $GITEA_USERNAME
-                password: $GITEA_PASSWORD
+          cat <<EOF > app-config.local.yaml
+          app:
+            baseUrl: #changeme
+          backend:
+            baseUrl: #changeme
+            cors:
+              origin: #changeme
           EOF
           cat app-config.local.yaml
 
       - name: Override backstage URLs
-        working-directory: backstage-playground
         run: |
           yq -i '.app.baseUrl = "http://localhost:3000"' app-config.local.yaml
           yq -i '.backend.baseUrl = "http://localhost:7007"' app-config.local.yaml
