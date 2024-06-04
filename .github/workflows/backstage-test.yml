@@ -38,7 +38,8 @@ jobs:
 
       - name: Override URLs
         uses: mikefarah/yq@v4
-        cmd: yq -i '.app.baseUrl = "http://localhost:3000"' app-config.local.yaml; yq -i '.backend.baseUrl = "http://localhost:7007"' app-config.local.yaml; yq -i '.backend.cors.origin = "http://localhost:7007"' app-config.local.yaml
+        with:
+          cmd: yq -i '.app.baseUrl = "http://localhost:3000"' app-config.local.yaml; yq -i '.backend.baseUrl = "http://localhost:7007"' app-config.local.yaml; yq -i '.backend.cors.origin = "http://localhost:7007"' app-config.local.yaml
 
       - name: Override backstage URLs
         run: |
