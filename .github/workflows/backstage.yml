@@ -8,6 +8,7 @@ on:
 
 env:
   IDPBUILDER_VERSION: v0.4.1
+  YQ_VERSION: v4.44.1
   QUAY_ORG: snowdrop
 
 jobs:
@@ -26,6 +27,11 @@ jobs:
           sudo mv ./idpbuilder /usr/local/bin/          
 
           idpbuilder version
+
+      - name: Install yq
+        run: |
+          sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/$YQ_VERSION/yq_linux_amd64
+          sudo chmod +x /usr/local/bin/yq
 
       - name: Create an IDP cluster and install the packages
         run: |
