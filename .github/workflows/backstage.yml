@@ -52,6 +52,9 @@ jobs:
           
           SERVICE_ACCOUNT_TOKEN=$(kubectl get secret backstage-secret -n backstage -o json | jq -r '.data.token' | base64 -d)
           echo "SERVICE_ACCOUNT_TOKEN=$SERVICE_ACCOUNT_TOKEN" >> "$GITHUB_ENV"
+          
+          BACKSTAGE_AUTH_SECRET=$(node -p 'require("crypto").randomBytes(24).toString("base64")')
+          echo "BACKSTAGE_AUTH_SECRET=$BACKSTAGE_AUTH_SECRET" >> "$GITHUB_ENV"
 
       - name: Logon to argocd server
         run: |
@@ -96,7 +99,7 @@ jobs:
           APP_BASE_URL=http://localhost:3000
           BACKEND_BASE_URL=http://localhost:7007
           
-          BACKSTAGE_AUTH_SECRET=$(node -p 'require("crypto").randomBytes(24).toString("base64")'
+          BACKSTAGE_AUTH_SECRET=$BACKSTAGE_AUTH_SECRET
           
           TEMPLATE_URL=https://github.com/q-shift/backstage-playground/blob/main/locations/root.yaml
           
