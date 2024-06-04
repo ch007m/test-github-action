@@ -129,6 +129,9 @@ jobs:
                 password: $GITEA_PASSWORD
           EOF
           cat app-config.local.yaml
+          
+          echo "Temporary hack till we remove the non needed cookie env var from the backstage-playground project"
+          sed -ie '/: 123456789/d' app-config.local.yaml
 
       #- name: Override URLs
       #  uses: mikefarah/yq@v4
