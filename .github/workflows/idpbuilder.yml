@@ -33,11 +33,11 @@ jobs:
           tar xzf idpbuilder.tar.gz
           sudo mv ./idpbuilder /usr/local/bin/          
 
-          ./idpbuilder version
+          idpbuilder version
 
       - name: Create an IDP cluster
         run: |    
-          idpbuilder create
+          idpbuilder create -p .github/resources/idp/packages/tekton
 
       - name: Get credentials
         run: |
@@ -58,18 +58,18 @@ jobs:
         
           echo "ARGO_SERVER=argocd.cnoe.localtest.me:8443" >> "$GITHUB_ENV"
 
-      - name: Create an Argo Application to deploy Tekton
-        run: |
-          argocd app create tekton \
-            --repo https://github.com/tektoncd/pipeline.git \
-            --revision $TEKTON_VERSION \
-            --path config \
-            --directory-recurse \
-            --insecure \
-            --server $ARGO_SERVER \
-            --dest-server https://kubernetes.default.svc \
-            --dest-namespace tekton \
-            --sync-policy auto
+      #- name: Create an Argo Application to deploy Tekton
+      #  run: |
+      #    argocd app create tekton \
+      #      --repo https://github.com/tektoncd/pipeline.git \
+      #      --revision $TEKTON_VERSION \
+      #      --path config \
+      #      --directory-recurse \
+      #      --insecure \
+      #      --server $ARGO_SERVER \
+      #      --dest-server https://kubernetes.default.svc \
+      #      --dest-namespace tekton \
+      #      --sync-policy auto
 
       - name: List Argo Application ...
         run: |
