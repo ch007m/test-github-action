@@ -40,7 +40,7 @@ jobs:
 
       - name: Set idp env var
         run: |
-          GITEA_PASSWORD=$(get secret/gitea-credential -n gitea -ojson | jq -r '.data.password' | base64 -d)
+          GITEA_PASSWORD=$(kubectl get secret/gitea-credential -n gitea -ojson | jq -r '.data.password' | base64 -d)
           GITEA_USERNAME=$(kubectl get secret/gitea-credential -n gitea -ojson | jq -r '.data.username' | base64 -d)
           echo "GITEA_PASSWORD=$GITEA_PASSWORD" >> "$GITHUB_ENV"
           echo "GITEA_USERNAME=$GITEA_USERNAME" >> "$GITHUB_ENV"
