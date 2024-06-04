@@ -41,3 +41,31 @@ jobs:
       - name: Get credentials
         run: |
           idpbuilder get secrets
+
+      - name: Install Argocd client and logon
+        run: |
+          curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+          rm argocd-linux-amd64
+          
+          ARGO_PASSWORD=$(kubectl get secret/argocd-initial-admin-secret -n argocd -ojson | jq -r '.data.password' | base64 -d)
+          ARGO_USERNAME=admin
+          ARGO_SERVER=argocd.cnoe.localtest.me:8443
+          argocd --insecure login $ARGO_SERVER --username $ARGO_ADMIN --password $ARGO_PASSWORD
+
+      - name: Create Argo Application to deploy Tekton
+        run: |
+          argocd app create tekton \
+            --repo https://github.com/tektoncd/pipeline.git \
+            --revision v0.59.0 \
+            --path config \
+            --directory-recurse \
+            --insecure \
+            --server argocd.cnoe.localtest.me:8443 \
+            --dest-server https://kubernetes.default.svc \
+            --dest-namespace tekton \
+            --sync-policy auto
+
+      - name: List Argo Application ...
+        run: |
+          argocd app list
