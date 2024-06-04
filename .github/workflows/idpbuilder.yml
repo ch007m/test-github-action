@@ -15,7 +15,7 @@ env:
   QUAY_ORG: snowdrop
 
 jobs:
-  kubevirt:
+  idp-test:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'idp') }}
     steps:
