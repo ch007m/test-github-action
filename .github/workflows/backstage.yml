@@ -80,8 +80,8 @@ jobs:
       - name: Grab node IP/Port
         run: |
           echo "Get node IP and port to access it"
-          CLUSTER_IP=$(DOCKER_IP=$(docker inspect localdev-control-plane | jq -r '.[].NetworkSettings.Ports."6443/tcp"[0].HostIp')
-          CLUSTER_PORT=$(DOCKER_IP=$(docker inspect localdev-control-plane | jq -r '.[].NetworkSettings.Ports."6443/tcp"[0].HostPort')
+          CLUSTER_IP=$(docker inspect localdev-control-plane | jq -r '.[].NetworkSettings.Ports."6443/tcp"[0].HostIp')
+          CLUSTER_PORT=$(docker inspect localdev-control-plane | jq -r '.[].NetworkSettings.Ports."6443/tcp"[0].HostPort')
           
           echo "API_URL=https://$CLUSTER_IP:$CLUSTER_PORT"
           echo "API_URL=https://$CLUSTER_IP:$CLUSTER_PORT" >> "$GITHUB_ENV"
