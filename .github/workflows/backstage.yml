@@ -112,6 +112,7 @@ jobs:
           ARGOCD_SERVER=$ARGO_SERVER
           ARGOCD_ADMIN_USER=$ARGO_USERNAME
           ARGOCD_ADMIN_PASSWORD=$ARGO_PASSWORD
+          ARGOCD_AUTH_TOKEN=123456789
           
           KUBERNETES_API_URL=$API_URL
           SERVICE_ACCOUNT_TOKEN=$SERVICE_ACCOUNT_TOKEN
@@ -129,18 +130,19 @@ jobs:
           EOF
           cat app-config.local.yaml
 
-      - name: Override URLs
-        uses: mikefarah/yq@v4
-        with:
-          cmd: yq -i '.app.baseUrl = "http://localhost:3000"' backstage-playground/app-config.local.yaml; yq -i '.backend.baseUrl = "http://localhost:7007"' backstage-playground/app-config.local.yaml; yq -i '.backend.cors.origin = "http://localhost:7007"' backstage-playground/app-config.local.yaml
+      #- name: Override URLs
+      #  uses: mikefarah/yq@v4
+      #  with:
+      #    cmd: yq -i '.app.baseUrl = "http://localhost:3000"' backstage-playground/app-config.local.yaml; yq -i '.backend.baseUrl = "http://localhost:7007"' backstage-playground/app-config.local.yaml; yq -i '.backend.cors.origin = "http://localhost:7007"' backstage-playground/app-config.local.yaml
 
-      #- name: Override backstage URLs
-      #  run: |
-      #    yq -i '.app.baseUrl = "http://localhost:3000"' backstage-playground/app-config.local.yaml
-      #    yq -i '.backend.baseUrl = "http://localhost:7007"' backstage-playground/app-config.local.yaml
-      #    yq -i '.backend.cors.origin = "http://localhost:7007"' backstage-playground/app-config.local.yaml
-      #
-      #    cat backstage-playground/app-config.local.yaml
+      - name: Override backstage URLs
+        working-directory: backstage-playground
+        run: |
+          yq -i '.app.baseUrl = "http://localhost:3000"' app-config.local.yaml
+          yq -i '.backend.baseUrl = "http://localhost:7007"' app-config.local.yaml
+          yq -i '.backend.cors.origin = "http://localhost:7007"' app-config.local.yaml
+      
+          cat backstage-playground/app-config.local.yaml
 
       - name: Launch backstage
         working-directory: backstage-playground
