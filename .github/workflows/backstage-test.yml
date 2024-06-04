@@ -63,8 +63,7 @@ jobs:
 
       - name: Override backstage URLs
         working-directory: backstage-playground
-        run: |   
-          ls -la
+        run: |
           yq -i '.app.baseUrl = "http://localhost:3000"' app-config.local.yaml
           yq -i '.backend.baseUrl = "http://localhost:7007"' app-config.local.yaml
           yq -i '.backend.cors.origin = "http://localhost:7007"' app-config.local.yaml
