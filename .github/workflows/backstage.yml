@@ -76,6 +76,7 @@ jobs:
 
       - name: Grab node IP/Port
         run: |
+          echo "Get node data ..."
           kubectl get nodes -oyaml
           cat ~/.kube/config
 
