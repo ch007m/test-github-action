@@ -7,7 +7,7 @@ on:
       - main
 
 env:
-  IDPBUILDER_VERSION: v0.41.0
+  IDPBUILDER_VERSION: v0.4.1
 
   ARGOCD_VERSION: v0.10.0
   GITEA_VERSION: 1.22.0
