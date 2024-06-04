@@ -128,10 +128,6 @@ jobs:
                 username: $GITEA_USERNAME
                 password: $GITEA_PASSWORD
           EOF
-          cat app-config.local.yaml
-          
-          echo "Temporary hack till we remove the non needed cookie env var from the backstage-playground project"
-          sed -i '/: 123456789/d' app-config.local.yaml
 
       #- name: Override URLs
       #  uses: mikefarah/yq@v4
@@ -141,6 +137,11 @@ jobs:
       - name: Override backstage URLs
         working-directory: backstage-playground
         run: |
+          echo "Temporary hack till we remove the non needed cookie env var from the backstage-playground project"
+          sed -i '/: 123456789/d' app-config.local.yaml
+          
+          cat app-config.local.yaml
+          
           yq -i '.app.baseUrl = "http://localhost:3000"' app-config.local.yaml
           yq -i '.backend.baseUrl = "http://localhost:7007"' app-config.local.yaml
           yq -i '.backend.cors.origin = "http://localhost:7007"' app-config.local.yaml
