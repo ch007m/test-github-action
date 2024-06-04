@@ -145,7 +145,7 @@ jobs:
           yq -i '.backend.baseUrl = "http://localhost:7007"' app-config.local.yaml
           yq -i '.backend.cors.origin = "http://localhost:7007"' app-config.local.yaml
       
-          cat backstage-playground/app-config.local.yaml
+          cat app-config.local.yaml
 
       - name: Launch backstage
         working-directory: backstage-playground
