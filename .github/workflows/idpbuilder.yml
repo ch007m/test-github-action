@@ -37,3 +37,7 @@ jobs:
       - name: Create an IDP cluster
         run: |    
           idpbuilder create
+
+      - name: Get credentials
+        run: |
+          idpbuilder get secrets
