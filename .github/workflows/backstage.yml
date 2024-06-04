@@ -43,5 +43,7 @@ jobs:
 
       - name: Launch backstage
         working-directory: backstage-playground
-        run: | 
-          yarn dev
+        run: |
+          touch app-config.local.yaml
+          yarn workspace app start &
+          yarn workspace backend start
