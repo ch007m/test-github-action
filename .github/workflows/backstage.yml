@@ -1,0 +1,42 @@
+name: Install and run backstage
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+env:
+  QUAY_ORG: snowdrop
+
+jobs:
+  qshift-backstage-playground:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'qshift') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - run: corepack enable
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+          cache: yarn
+
+      - name: Install & build Qshift
+        run: |
+          git clone https://github.com/q-shift/backstage-playground.git
+          cd backstage-playground
+          
+          yarn --immutable
+          yarn tsc
+          yarn build:all
+
+      - name: Launch backstage
+        run: | 
+          yarn dev
