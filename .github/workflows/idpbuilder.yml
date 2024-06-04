@@ -17,6 +17,7 @@ env:
 jobs:
   kubevirt:
     runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'idp') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
