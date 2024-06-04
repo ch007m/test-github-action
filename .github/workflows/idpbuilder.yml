@@ -51,7 +51,7 @@ jobs:
           ARGO_PASSWORD=$(kubectl get secret/argocd-initial-admin-secret -n argocd -ojson | jq -r '.data.password' | base64 -d)
           ARGO_USERNAME=admin
           ARGO_SERVER=argocd.cnoe.localtest.me:8443
-          argocd --insecure login $ARGO_SERVER --username $ARGO_ADMIN --password $ARGO_PASSWORD
+          argocd --insecure login $ARGO_SERVER --username $ARGO_USERNAME --password $ARGO_PASSWORD
           
           echo "$ARGO_SERVER" >> "$GITHUB_ENV"
 
