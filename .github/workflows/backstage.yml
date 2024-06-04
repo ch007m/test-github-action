@@ -47,10 +47,6 @@ jobs:
           
           echo "ARGO_SERVER=argocd.cnoe.localtest.me:8443" >> "$GITHUB_ENV"
 
-      - name: List Argo Application ...
-        run: |
-          argocd app list  
-
       - name: Checkout QShift backstage playground
         uses: actions/checkout@v4
         with:
@@ -76,9 +72,16 @@ jobs:
 
       - name: Grab node IP/Port
         run: |
-          echo "Get node data ..."
-          kubectl get nodes -oyaml
-          cat ~/.kube/config
+          echo "Get node IP and port to access it"
+          CLUSTER_IP=$(DOCKER_IP=$(docker inspect localdev-control-plane | jq -r '.[].NetworkSettings.Ports."6443/tcp"[0].HostIp')
+          CLUSTER_PORT=$(DOCKER_IP=$(docker inspect localdev-control-plane | jq -r '.[].NetworkSettings.Ports."6443/tcp"[0].HostPort')
+          
+          echo "API_URL=https://$CLUSTER_IP:$CLUSTER_PORT"
+          echo "API_URL=https://$CLUSTER_IP:$CLUSTER_PORT" >> "$GITHUB_ENV"
+
+      - name: List Argo Application ...
+        run: |
+          argocd app list
 
       - name: Configure app-config.local.yaml file
         working-directory: backstage-playground
@@ -95,12 +98,14 @@ jobs:
           ARGOCD_ADMIN_USER=admin
           ARGOCD_ADMIN_PASSWORD=$(kubectl get secret/argocd-initial-admin-secret -n argocd -ojson | jq -r '.data.password' | base64 -d)
           
-          KUBERNETES_API_URL=https://api.:6443
+          KUBERNETES_API_URL=$API_URL
           SERVICE_ACCOUNT_TOKEN=$(kubectl get secret backstage-secret -o json | jq -r '.data.token' | base64 -d)
           EOF
           
           export $(grep -v '^#' backstage_env_secret.env | xargs)
           envsubst < manifest/templates/app-config.qshift.tmpl > app-config.local.yaml
+          
+          cat app-config.local.yaml
 
       - name: Launch backstage
         working-directory: backstage-playground
