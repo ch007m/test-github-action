@@ -49,6 +49,9 @@ jobs:
           echo "ARGO_PASSWORD=$ARGO_PASSWORD" >> "$GITHUB_ENV"
           echo "ARGO_SERVER=argocd.cnoe.localtest.me:8443" >> "$GITHUB_ENV"
           echo "ARGO_USERNAME=admin" >> "$GITHUB_ENV"
+          
+          SERVICE_ACCOUNT_TOKEN=$(kubectl get secret backstage-secret -n backstage -o json | jq -r '.data.token' | base64 -d)
+          echo "SERVICE_ACCOUNT_TOKEN=$SERVICE_ACCOUNT_TOKEN" >> "$GITHUB_ENV"
 
       - name: Logon to argocd server
         run: |
@@ -63,10 +66,6 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20.x
-
-      - name: Get kubernetes Service Account Token
-        run: |
-          kubectl get secret backstage-secret -n backstage -o json | jq -r '.data.token' | base64 -d
 
       - run: corepack enable
 
@@ -106,7 +105,7 @@ jobs:
           ARGOCD_ADMIN_PASSWORD=$ARGO_PASSWORD
           
           KUBERNETES_API_URL=$API_URL
-          SERVICE_ACCOUNT_TOKEN=$(kubectl get secret backstage-secret -o json | jq -r '.data.token' | base64 -d)
+          SERVICE_ACCOUNT_TOKEN=$SERVICE_ACCOUNT_TOKEN
           EOF
           
           export $(grep -v '^#' backstage_env_secret.env | xargs)
