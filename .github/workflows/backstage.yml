@@ -67,6 +67,11 @@ jobs:
         with:
           node-version: 20.x
 
+      - uses: Get kubernetes Secret Token
+        run: |
+          kubectl create sa my-backstage 
+          kubectl get secret $(kubectl get secret | grep my-backstage-token | cut -f1 -d " ") -o go-template='{{.data.token | base64decode}}'"
+
       - run: corepack enable
 
       - name: Install & build QShift
