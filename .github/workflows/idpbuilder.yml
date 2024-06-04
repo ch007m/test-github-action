@@ -53,7 +53,7 @@ jobs:
           ARGO_SERVER=argocd.cnoe.localtest.me:8443
           argocd --insecure login $ARGO_SERVER --username $ARGO_ADMIN --password $ARGO_PASSWORD
 
-      - name: Create Argo Application to deploy Tekton
+      - name: Create an Argo Application to deploy Tekton
         run: |
           argocd app create tekton \
             --repo https://github.com/tektoncd/pipeline.git \
