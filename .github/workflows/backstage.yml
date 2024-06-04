@@ -50,12 +50,12 @@ jobs:
         run: |
           argocd app list  
 
-  qshift-backstage-playground:
-    runs-on: ubuntu-latest
-    # if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'qshift') }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+  #qshift-backstage-playground:
+  #  runs-on: ubuntu-latest
+  #  # if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'qshift') }}
+  #  steps:
+  #    - name: Checkout
+  #      uses: actions/checkout@v4
 
       - name: Checkout QShift backstage playground
         uses: actions/checkout@v4
