@@ -53,7 +53,7 @@ jobs:
           ARGO_SERVER=argocd.cnoe.localtest.me:8443
           argocd --insecure login $ARGO_SERVER --username $ARGO_USERNAME --password $ARGO_PASSWORD
           
-          echo "$ARGO_SERVER=argocd.cnoe.localtest.me:8443" >> "$GITHUB_ENV"
+          echo "ARGO_SERVER=argocd.cnoe.localtest.me:8443" >> "$GITHUB_ENV"
 
       - name: Create an Argo Application to deploy Tekton
         run: |
