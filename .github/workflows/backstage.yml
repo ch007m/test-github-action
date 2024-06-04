@@ -7,12 +7,52 @@ on:
       - main
 
 env:
+  IDPBUILDER_VERSION: v0.4.1
   QUAY_ORG: snowdrop
 
 jobs:
+  setup-idp:
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'idp') }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install idpbuilder
+        run: |
+          version=${IDPBUILDER_VERSION}
+          curl -L -o ./idpbuilder.tar.gz "https://github.com/cnoe-io/idpbuilder/releases/download/${version}/idpbuilder-$(uname | awk '{print tolower($0)}')-$(uname -m | sed 's/x86_64/amd64/').tar.gz"
+          tar xzf idpbuilder.tar.gz
+          sudo mv ./idpbuilder /usr/local/bin/          
+
+          idpbuilder version
+
+      - name: Create an IDP cluster and install the packages
+        run: |
+          idpbuilder create -p .github/resources/idp/packages/tekton
+
+      - name: Install Argocd client
+        run: |
+          curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
+          sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
+          rm argocd-linux-amd64
+
+      - name: Logon to argocd server
+        run: |
+          ARGO_PASSWORD=$(kubectl get secret/argocd-initial-admin-secret -n argocd -ojson | jq -r '.data.password' | base64 -d)
+          ARGO_USERNAME=admin
+          ARGO_SERVER=argocd.cnoe.localtest.me:8443
+          argocd --insecure login $ARGO_SERVER --username $ARGO_USERNAME --password $ARGO_PASSWORD
+          
+          echo "ARGO_SERVER=argocd.cnoe.localtest.me:8443" >> "$GITHUB_ENV"
+
+      - name: List Argo Application ...
+        run: |
+          argocd app list  
+
   qshift-backstage-playground:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'qshift') }}
+    # if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'qshift') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -28,11 +68,6 @@ jobs:
           node-version: 20.x
 
       - run: corepack enable
-
-      #- uses: actions/setup-node@v4
-      #  with:
-      #    node-version: 20.x
-      #    cache: yarn
 
       - name: Install & build QShift
         working-directory: backstage-playground

@@ -26,8 +26,6 @@ jobs:
 
       - name: Install idpbuilder
         run: |
-          #version=$(curl -Ls -o /dev/null -w %{url_effective} https://github.com/cnoe-io/idpbuilder/releases/latest)
-          #version=${version##*/}
           version=${IDPBUILDER_VERSION}
           curl -L -o ./idpbuilder.tar.gz "https://github.com/cnoe-io/idpbuilder/releases/download/${version}/idpbuilder-$(uname | awk '{print tolower($0)}')-$(uname -m | sed 's/x86_64/amd64/').tar.gz"
           tar xzf idpbuilder.tar.gz
@@ -39,11 +37,11 @@ jobs:
         run: |    
           idpbuilder create -p .github/resources/idp/packages/tekton
 
-      - name: Get credentials
-        run: |
-          idpbuilder get secrets
+      #- name: Get credentials
+      #  run: |
+      #    idpbuilder get secrets
 
-      - name: Install Argocd client and logon
+      - name: Install Argocd client
         run: |
           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
