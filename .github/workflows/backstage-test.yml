@@ -65,8 +65,8 @@ jobs:
         working-directory: backstage-playground
         run: |   
           yq -V
-          yq -v e '.app.baseUrl = "http://localhost:3000"' -i app-config.local.yaml
-          yq -v e '.backend.baseUrl = "http://localhost:7007"' -i app-config.local.yaml
-          yq -v e '.backend.cors.origin = "http://localhost:7007"' -i app-config.local.yaml
+          yq -v -i '.app.baseUrl = "http://localhost:3000"' app-config.local.yaml
+          yq -v -i '.backend.baseUrl = "http://localhost:7007"' app-config.local.yaml
+          yq -v -i '.backend.cors.origin = "http://localhost:7007"' app-config.local.yaml
           
           cat app-config.local.yaml
