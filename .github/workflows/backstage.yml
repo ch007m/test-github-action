@@ -129,13 +129,18 @@ jobs:
           EOF
           cat app-config.local.yaml
 
-      - name: Override backstage URLs
-        run: |   
-          yq -i '.app.baseUrl = "http://localhost:3000"' backstage-playground/app-config.local.yaml
-          yq -i '.backend.baseUrl = "http://localhost:7007"' backstage-playground/app-config.local.yaml
-          yq -i '.backend.cors.origin = "http://localhost:7007"' backstage-playground/app-config.local.yaml
-          
-          cat backstage-playground/app-config.local.yaml
+      - name: Override URLs
+        uses: mikefarah/yq@v4
+        with:
+          cmd: yq -i '.app.baseUrl = "http://localhost:3000"' backstage-playground/app-config.local.yaml; yq -i '.backend.baseUrl = "http://localhost:7007"' backstage-playground/app-config.local.yaml; yq -i '.backend.cors.origin = "http://localhost:7007"' backstage-playground/app-config.local.yaml
+
+      #- name: Override backstage URLs
+      #  run: |
+      #    yq -i '.app.baseUrl = "http://localhost:3000"' backstage-playground/app-config.local.yaml
+      #    yq -i '.backend.baseUrl = "http://localhost:7007"' backstage-playground/app-config.local.yaml
+      #    yq -i '.backend.cors.origin = "http://localhost:7007"' backstage-playground/app-config.local.yaml
+      #
+      #    cat backstage-playground/app-config.local.yaml
 
       - name: Launch backstage
         working-directory: backstage-playground
