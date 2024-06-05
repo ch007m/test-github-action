@@ -119,7 +119,7 @@ jobs:
              "$(curl -s -o /dev/null "http://localhost:7007/api/catalog/entities?filter=kind=location -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" | jq  '. | length")" \
              -eq 4 ]
           do
-             Wait till locations are generated ...
+             echo "Wait till locations are generated ..."
           done
           
           echo "Show the locations ..."
