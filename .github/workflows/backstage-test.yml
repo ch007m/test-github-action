@@ -1,4 +1,4 @@
-name: Install and run backstage
+name: Test backstage with template
 
 on:
   workflow_dispatch:
