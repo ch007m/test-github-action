@@ -9,7 +9,7 @@ metadata:
     - java
     - grpc
 spec:
-  owner: service@example.com
+  owner: guests
   type: service
 
   parameters:
