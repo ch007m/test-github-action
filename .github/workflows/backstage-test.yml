@@ -115,9 +115,9 @@ jobs:
 
       - name: Check backstage locations
         run: |
-          until [ \
+          until [[ \
              "$(curl -s -o /dev/null http://localhost:7007/api/catalog/entities?filter=kind=location -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" | jq  '. | length')" \
-             -eq 4 ]
+             -eq 4 ]]
           do
              echo "Wait till locations are generated ..."
              sleep 5
