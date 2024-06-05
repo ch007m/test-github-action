@@ -91,12 +91,12 @@ jobs:
       #    run: yarn dev
       #    wait-on: http://localhost:7007/settings
 
-      q- name: Launch backstage
-      q  working-directory: backstage-playground
-      q  run: |
-      q    yarn workspace backend start &
-      q    yarn workspace app start &
-      q    until curl --output /dev/null --head --silent --fail http://localhost:3000; do echo "Wait till backstage is running ...."; sleep 5; done
+      - name: Launch backstage
+        working-directory: backstage-playground
+        run: |
+          yarn workspace backend start &
+          yarn workspace app start &
+          until curl --output /dev/null --head --silent --fail http://localhost:3000; do echo "Wait till backstage is running ...."; sleep 5; done
 
       - name: Import a template
         runt: |
