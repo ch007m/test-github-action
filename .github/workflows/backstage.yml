@@ -154,8 +154,9 @@ jobs:
       - name: Launch backstage
         working-directory: backstage-playground
         run: |
-          yarn workspace app start
-          yarn workspace backend start
+          yarn workspace app start &
+          yarn workspace backend start &
+          until curl --output /dev/null --head --fail http://localhost:3000; do echo "Wait till backstage is running ...."; sleep 5; done
 
       - name: Check backstage resources
         run: |
