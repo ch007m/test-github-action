@@ -154,7 +154,7 @@ jobs:
       - name: Launch backstage
         working-directory: backstage-playground
         run: |
-          yarn workspace app start &
+          yarn workspace app start
           yarn workspace backend start
 
       - name: Check backstage resources
