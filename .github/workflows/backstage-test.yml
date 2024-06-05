@@ -115,6 +115,13 @@ jobs:
 
       - name: Check backstage locations
         run: |
+          echo "Show the locations ..."
+          curl -s "http://localhost:7007/api/catalog/entities?filter=kind=location" \
+          -H 'Content-Type: application/json' \
+          -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
+          --compressed \
+          | jq -r
+          
           until [[ \
              "$(curl -s -o /dev/null http://localhost:7007/api/catalog/entities?filter=kind=location -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" | jq  '. | length')" \
              -eq 4 ]]
