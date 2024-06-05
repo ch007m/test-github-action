@@ -33,7 +33,7 @@ jobs:
           BACKSTAGE_AUTH_SECRET=$(node -p 'require("crypto").randomBytes(24).toString("base64")')
           echo "BACKSTAGE_AUTH_SECRET=$BACKSTAGE_AUTH_SECRET" >> "$GITHUB_ENV"
           
-          echo "API_URL=https://kubernetes.default.svc"
+          API_URL=https://kubernetes.default.svc"
           echo "API_URL=$API_URL" >> "$GITHUB_ENV"
 
       - name: Checkout QShift backstage playground
