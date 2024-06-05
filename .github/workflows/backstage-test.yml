@@ -124,6 +124,9 @@ jobs:
           --compressed \
           | jq -r
           
+          echo "Show template path ..."
+          ls -la $GITHUB_WORKSPACE/test-github-action/.github/resources/springboot-grpc-template/template.yaml
+          
           until [[ \
              "$(curl -s -o /dev/null http://localhost:7007/api/catalog/entities?filter=kind=location -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" | jq  '. | length')" \
              -eq 4 ]]
