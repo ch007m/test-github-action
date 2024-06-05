@@ -1,3 +1,5 @@
 /.idea/
 /.github/resources/argocd/helm/my-chart/Chart.lock
 /.github/resources/argocd/helm/my-chart/charts/
+/software-templates/
+/backstage-plugins-for-aws/

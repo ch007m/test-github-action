@@ -132,12 +132,19 @@ jobs:
           
           cat backstage-playground/app-config.local.yaml
 
-      - name: Launch backstage
-        working-directory: backstage-playground
-        run: |
-          yarn workspace backend start &
-          yarn workspace app start &
-          until curl --output /dev/null --head --silent --fail http://localhost:3000; do echo "Wait till backstage is running ...."; sleep 5; done
+      - name: Start backstage
+        # https://github.com/JarvusInnovations/background-action
+        uses: JarvusInnovations/background-action@v1
+        with:
+          run: yarn dev
+          wait-on: http://localhost:7007/settings
+
+      #- name: Launch backstage
+      #  working-directory: backstage-playground
+      #  run: |
+      #    yarn workspace backend start &
+      #    yarn workspace app start &
+      #    until curl --output /dev/null --head --silent --fail http://localhost:3000; do echo "Wait till backstage is running ...."; sleep 5; done
 
       - name: Check backstage resources
         run: |
