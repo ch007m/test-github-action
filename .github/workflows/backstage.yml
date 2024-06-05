@@ -54,7 +54,7 @@ jobs:
           
           # TODO: To be fixed using new idpbuilder release
           # echo "GITEA_PASSWORD=$GITEA_PASSWORD" >> "$GITHUB_ENV"
-          echo "GITEA_PASSWORD=123456789" >> "$GITHUB_ENV"
+          echo "GITEA_PASSWORD=ghp_S8GMxiyRdd34ttYU" >> "$GITHUB_ENV"
           
           echo "GITEA_USERNAME=$GITEA_USERNAME" >> "$GITHUB_ENV"
   
