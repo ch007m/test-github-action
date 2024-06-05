@@ -99,7 +99,7 @@ jobs:
           until curl --output /dev/null --head --silent --fail http://localhost:3000; do echo "Wait till backstage is running ...."; sleep 5; done
 
       - name: Import a template
-        runt: |
+        run: |
           curl -s 'http://localhost:7007/api/catalog/locations' \
             -X POST \
             -H 'Content-Type: application/json' \
