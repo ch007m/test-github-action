@@ -156,7 +156,7 @@ jobs:
         run: |
           yarn workspace backend start &
           yarn workspace app start &
-          until curl --output /dev/null --head --fail http://localhost:3000; do echo "Wait till backstage is running ...."; sleep 5; done
+          until curl --output /dev/null --head --silent --fail http://localhost:3000; do echo "Wait till backstage is running ...."; sleep 5; done
 
       - name: Check backstage resources
         run: |
