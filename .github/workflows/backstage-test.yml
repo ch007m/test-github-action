@@ -6,6 +6,8 @@ on:
     branches:
       - main
 
+permissions: read-all
+
 jobs:
   setup-backstage-test-templates:
     runs-on: ubuntu-latest
