@@ -120,6 +120,7 @@ jobs:
              -eq 4 ]
           do
              echo "Wait till locations are generated ..."
+             sleep 5
           done
           
           echo "Show the locations ..."
