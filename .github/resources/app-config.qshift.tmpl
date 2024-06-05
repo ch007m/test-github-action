@@ -64,6 +64,10 @@ catalog:
       target: ${TEMPLATE_URL} # default could be : https://github.com/q-shift/backstage-playground/blob/main/locations/root.yaml
       rules:
         - allow: [API,Component,User,Group,Location,Resource,System,Template]
+    - type: url
+      target: https://github.com/ch007m/test-github-action/blob/main/.github/resources/springboot-grpc-template/template.yaml
+      rules:
+        - allow: [API,Component,User,Group,Location,Resource,System,Template]
     - type: file
       target: ../../locations/root.yaml
       rules:
