@@ -51,7 +51,11 @@ jobs:
           GITEA_USERNAME=$(kubectl get secret/gitea-credential -n gitea -ojson | jq -r '.data.username' | base64 -d)
           GITEA_URL=$(kubectl get ingress/my-gitea -n gitea -ojson | jq -r '.spec.rules[0].host')
           echo "GITEA_URL=$GITEA_URL" >> "$GITHUB_ENV"          
-          echo "GITEA_PASSWORD=$GITEA_PASSWORD" >> "$GITHUB_ENV"
+          
+          # TODO: To be fixed using new idpbuilder release
+          # echo "GITEA_PASSWORD=$GITEA_PASSWORD" >> "$GITHUB_ENV"
+          echo "GITEA_PASSWORD=123456789" >> "$GITHUB_ENV"
+          
           echo "GITEA_USERNAME=$GITEA_USERNAME" >> "$GITHUB_ENV"
   
           ARGO_PASSWORD=$(kubectl get secret/argocd-initial-admin-secret -n argocd -ojson | jq -r '.data.password' | base64 -d)
@@ -155,10 +159,9 @@ jobs:
 
       - name: Check backstage resources
         run: |
-          curl -s 'http://localhost:7007/api/catalog/entities?filter=kind%3Dlocation' \
+          echo "Show the locations"
+          curl "http://localhost:7007/api/catalog/entities?filter=kind=location" \
             -H 'Content-Type: application/json' \
             -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
-            -H 'Referer: http://localhost:3000/' \
-            -H 'Origin: http://localhost:3000' \
             --compressed \
            | jq -r
