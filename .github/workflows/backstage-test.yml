@@ -87,9 +87,9 @@ jobs:
       - name: Start backstage
         # https://github.com/JarvusInnovations/background-action
         uses: JarvusInnovations/background-action@v1
-        working-directory: backstage-playground
         with:
           run: yarn dev
+          working-directory: backstage-playground
           tail: true
           wait-on: http://localhost:7007/settings
 
