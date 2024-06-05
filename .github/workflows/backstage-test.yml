@@ -95,12 +95,14 @@ jobs:
           log-output: true
           wait-on: http://localhost:7007/settings
 
-      #- name: Launch backstage
-      #  working-directory: backstage-playground
-      #  run: |
-      #    yarn workspace backend start &
-      #    yarn workspace app start &
-      #    until curl --output /dev/null --head --silent --fail http://localhost:3000; do echo "Wait till backstage is running ...."; sleep 5; done
+      - name: Check backstage locations
+        run: |
+          echo "Show the locations ..."
+          curl -s "http://localhost:7007/api/catalog/entities?filter=kind=location" \
+            -H 'Content-Type: application/json' \
+            -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
+            --compressed \
+           | jq -r
 
       - name: Import a template
         run: |
@@ -110,9 +112,9 @@ jobs:
             -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
             --data-raw '{"type":"url","target":"https://github.com/ch007m/test-github-action/blob/main/.github/resources/springboot-grpc-template/template.yaml"}'
 
-      - name: Check backstage resources
+      - name: Check backstage locations
         run: |
-          sleep 5s
+          sleep 10s
           echo "Show the locations ..."
           curl -s "http://localhost:7007/api/catalog/entities?filter=kind=location" \
             -H 'Content-Type: application/json' \
