@@ -154,13 +154,13 @@ jobs:
       - name: Launch backstage
         working-directory: backstage-playground
         run: |
-          yarn workspace app start &
           yarn workspace backend start &
+          yarn workspace app start &
           until curl --output /dev/null --head --fail http://localhost:3000; do echo "Wait till backstage is running ...."; sleep 5; done
 
       - name: Check backstage resources
         run: |
-          echo "Show the locations"
+          echo "Show the locations ..."
           curl "http://localhost:7007/api/catalog/entities?filter=kind=location" \
             -H 'Content-Type: application/json' \
             -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
