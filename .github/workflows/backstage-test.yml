@@ -1,4 +1,4 @@
-name: Test YQ
+name: Install and run backstage
 
 on:
   workflow_dispatch:
@@ -6,41 +6,128 @@ on:
     branches:
       - main
 
-env:
-  IDPBUILDER_VERSION: v0.4.1
-  YQ_VERSION: v4.44.1
-  QUAY_ORG: snowdrop
-
 jobs:
   setup-idp:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'yq') }}
+    if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'play') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install yq
+      - name: Set idp env variables
         run: |
-          sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/$YQ_VERSION/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
+          GITEA_USERNAME=giteaAdmin
+          GITEA_URL=gitea.localtest.me:8443
+          echo "GITEA_USERNAME=$GITEA_USERNAME" >> "$GITHUB_ENV"          
+          echo "GITEA_URL=$GITEA_URL" >> "$GITHUB_ENV"          
+          echo "GITEA_PASSWORD=ghp_S8GMxiyRdd34ttYU" >> "$GITHUB_ENV"
+          
+          ARGO_PASSWORD=ghp_S8GMxiyRdd34ttYU
+          echo "ARGO_PASSWORD=$ARGO_PASSWORD" >> "$GITHUB_ENV"
+          echo "ARGO_SERVER=argocd.cnoe.localtest.me:8443" >> "$GITHUB_ENV"
+          echo "ARGO_USERNAME=admin" >> "$GITHUB_ENV"
+          
+          SERVICE_ACCOUNT_TOKEN="eyJhbGciOiJSUzI1NiIsImtpZCI6Ik1tbGtkcWpzNGNBcTRLS2ktU2I3ZVRaWlBMSFZYTHNQU0xHYWdObGtMdFEifQ.eyJpc3MiOiJrdWJlcm5ldGVzL3NlcnZpY2VhY2NvdW50Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9uYW1lc3BhY2UiOiJiYWNrc3RhZ2UiLCJrdWJlcm5ldGVzLmlvL3NlcnZpY2VhY2NvdW50L3NlY3JldC5uYW1lIjoibXktYmFja3N0YWdlLXRva2VuLXh0Z2Y2Iiwia3ViZXJuZXRlcy5pby9zZXJ2aWNlYWNjb3VudC9zZXJ2aWNlLWFjY291bnQubmFtZSI6Im15LWJhY2tzdGFnZSIsImt1YmVybmV0ZXMuaW8vc2VydmljZWFjY291bnQvc2VydmljZS1hY2NvdW50LnVpZCI6IjJmNWFmMGZkLTYyYTctNDMxNS04MDY2LTI3NGYwMjVhNDZkMSIsInN1YiI6InN5c3RlbTpzZXJ2aWNlYWNjb3VudDpiYWNrc3RhZ2U6bXktYmFja3N0YWdlIn0.jKHL4s6qgOvhPTiBu-XQRSmkE8FmFht5ige56VTqWHViY9aQBJrtzsYtiNOy9GceB3sVGMFkMELHBszTTcBD9yNyYQp7wtCfqF1T0udYDct5FTKpcCaK5SskZQzy5ZXXbRVlUxFcQu88LUZZHZXBLDDzW6XGuiyLWbhjKJQQxHfqpBjSIRfeAAevwPbKsYAKQyrwj9jeYVrBwYNzmhobCXr0RkBopiEavAAL57RKOfHuTOR0fSD2dgmFyo3YxdMFGxq8gzXNseFMhno7f5jfIR1FhY1V0HXu-Hszx3zBZgf7vzecOQtz4DRVcbcpuQtn0G9Y9W-OEo8cLHbDs5z01T2doPxMcsmgDoFTMcrSWIwA6vrPaZaZxpNNzpoue_gXrzALGZ4JjV6ogUfrbYL-byVMwq8Ec8-hAAVaD1zAVmVqw-p6U2XFHPw8dFq91I9xMrxH3ULI-d7xRQsQqHsdC0moyLQT9oHCQKJIABi8LIrOqm10hamESeAt6CvYqNiJYrxWqlyIlJPXvU0BfO7btKVlwkPQb0sBkKT25PykJYuCL4UoSxBulNKhUdawMYtAKq6GWPrX35c56p9w7gLGeAH3zyXmR4wXnn7O-onfRVU6vng3Enwur24VdF4tfGamkhybsafal6ilES20nX7rWahk8Z1orGuyvtzXDt-O76c"
+          echo "SERVICE_ACCOUNT_TOKEN=$SERVICE_ACCOUNT_TOKEN" >> "$GITHUB_ENV"
+          
+          BACKSTAGE_AUTH_SECRET=$(node -p 'require("crypto").randomBytes(24).toString("base64")')
+          echo "BACKSTAGE_AUTH_SECRET=$BACKSTAGE_AUTH_SECRET" >> "$GITHUB_ENV"
+          
+          echo "API_URL=https://kubernetes.default.svc"
+          echo "API_URL=$API_URL" >> "$GITHUB_ENV"
+
+      - name: Checkout QShift backstage playground
+        uses: actions/checkout@v4
+        with:
+          repository: q-shift/backstage-playground
+          path: backstage-playground
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20.x
+
+      - run: corepack enable
+
+      - name: Install & build QShift
+        working-directory: backstage-playground
+        run: |
+          yarn --immutable
+          yarn tsc
+          yarn build:all
 
       - name: Configure app-config.local.yaml file
         run: |
-          cat <<EOF > app-config.local.yaml
-          app:
-            baseUrl: #changeme
-          backend:
-            baseUrl: #changeme
-            cors:
-              origin: #changeme
+          cat <<EOF > backstage_env_secret.env
+          APP_BASE_URL=http://localhost:3000
+          BACKEND_BASE_URL=http://localhost:7007
+          
+          BACKSTAGE_AUTH_SECRET=$BACKSTAGE_AUTH_SECRET
+          
+          TEMPLATE_URL=https://github.com/q-shift/backstage-playground/blob/main/locations/root.yaml
+          
+          ARGOCD_SERVER=$ARGO_SERVER
+          ARGOCD_ADMIN_USER=$ARGO_USERNAME
+          ARGOCD_ADMIN_PASSWORD=$ARGO_PASSWORD
+          
+          GITHUB_PERSONAL_ACCESS_TOKEN=ghp_S8GMxiyRdd34ttYU
+          
+          GITEA_URL=$GITEA_URL
+          GITEA_USERNAME=$GITEA_USERNAME
+          GITEA_PASSWORD=$GITEA_PASSWORD
+          
+          KUBERNETES_API_URL=$API_URL
+          SERVICE_ACCOUNT_TOKEN=$SERVICE_ACCOUNT_TOKEN
           EOF
-          cat app-config.local.yaml
+          
+          export $(grep -v '^#' backstage_env_secret.env | xargs)
+          envsubst < .github/resources/app-config.qshift.tmpl > backstage-playground/app-config.local.yaml
+          
+          cat backstage-playground/app-config.local.yaml
 
-      - name: Override URLs
-        uses: mikefarah/yq@v4
-        with:
-          cmd: yq -i '.app.baseUrl = "http://localhost:3000"' app-config.local.yaml; yq -i '.backend.baseUrl = "http://localhost:7007"' app-config.local.yaml; yq -i '.backend.cors.origin = "http://localhost:7007"' app-config.local.yaml
+      #- name: Start backstage
+      #  # https://github.com/JarvusInnovations/background-action
+      #  uses: JarvusInnovations/background-action@v1
+      #  with:
+      #    run: yarn dev
+      #    wait-on: http://localhost:7007/settings
 
-      - name: Override backstage URLs
+      q- name: Launch backstage
+      q  working-directory: backstage-playground
+      q  run: |
+      q    yarn workspace backend start &
+      q    yarn workspace app start &
+      q    until curl --output /dev/null --head --silent --fail http://localhost:3000; do echo "Wait till backstage is running ...."; sleep 5; done
+
+      - name: Import a template
+        runt: |
+          curl -s 'http://localhost:7007/api/catalog/locations' \
+            -X POST \
+            -H 'Content-Type: application/json' \
+            -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
+            --data-raw '{"type":"url","target":"https://github.com/ch007m/test-github-action/blob/main/.github/resources/springboot-grpc-template/template.yaml"}'
+
+      - name: Check backstage resources
         run: |
-          cat app-config.local.yaml
+          echo "Show the locations ..."
+          curl -s "http://localhost:7007/api/catalog/entities?filter=kind=location" \
+            -H 'Content-Type: application/json' \
+            -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
+            --compressed \
+           | jq -r
+
+      - name : Scaffold a project
+        run: |
+          curl -s 'http://localhost:7007/api/scaffolder/v2/tasks' \
+          -X POST \
+          -H 'Content-Type: application/json' \
+          -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
+          -d @.github/resources/scaffold_springboot.json
+
+      - name: Check backstage components
+        run: |
+          echo "Show the locations ..."
+          curl -s "http://localhost:7007/api/catalog/entities?filter=kind=component" \
+            -H 'Content-Type: application/json' \
+            -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
+            --compressed \
+           | jq -r

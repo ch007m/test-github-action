@@ -1,0 +1,11 @@
+{
+  "templateRef": "template:default/springboot-template",
+  "values": {
+    "owner": "group:default/guests",
+    "component_id": "my-spring-boot",
+    "java_package_name": "dev.snowdrop",
+    "description": "dummy spring application",
+    "repoUrl": "github.com?owner=ch007m&repo=my-springboot"
+  },
+  "secrets": {}
+}
