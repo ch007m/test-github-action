@@ -127,12 +127,14 @@ jobs:
           echo "Show template path ..."
           ls -la $GITHUB_WORKSPACE/.github/resources/springboot-grpc-template/template.yaml
           
-          until [[ \
-             "$(curl -s -o /dev/null http://localhost:7007/api/catalog/entities?filter=kind=location -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" | jq  '. | length')" \
-             -eq 4 ]]
-          do
+          get_entities_length() {
+              curl -s -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" http://localhost:7007/api/catalog/entities?filter=kind=location | jq '. | length'
+          }
+          
+          until [[ $(get_entities_length) -eq 4 ]]; do
              echo "Wait till locations are generated ..."
-             curl -s http://localhost:7007/api/catalog/entities?filter=kind=location -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" | jq  '. | length'
+             length=$(get_entities_length)
+             echo "Current length: $length"
              sleep 5
           done
           
