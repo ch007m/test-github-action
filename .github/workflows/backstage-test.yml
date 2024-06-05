@@ -7,14 +7,14 @@ on:
       - main
 
 jobs:
-  setup-idp:
+  setup-backstage-test-templates:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'play') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set idp env variables
+      - name: Set backstage env variables
         run: |
           GITEA_USERNAME=giteaAdmin
           GITEA_URL=gitea.localtest.me:8443
@@ -108,6 +108,7 @@ jobs:
 
       - name: Check backstage resources
         run: |
+          sleep 5s
           echo "Show the locations ..."
           curl -s "http://localhost:7007/api/catalog/entities?filter=kind=location" \
             -H 'Content-Type: application/json' \
