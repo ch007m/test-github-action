@@ -101,6 +101,11 @@ jobs:
           curl -s "http://localhost:7007/api/catalog/entities?filter=kind=location" \
             -H 'Content-Type: application/json' \
             -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
+            | jq  '. | length'
+          
+          curl -s "http://localhost:7007/api/catalog/entities?filter=kind=location" \
+            -H 'Content-Type: application/json' \
+            -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
             --compressed \
            | jq -r
 
@@ -114,8 +119,13 @@ jobs:
 
       - name: Check backstage locations
         run: |
-          sleep 10s
+          sleep 20s
           echo "Show the locations ..."
+          curl -s "http://localhost:7007/api/catalog/entities?filter=kind=location" \
+            -H 'Content-Type: application/json' \
+            -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
+            | jq  '. | length'
+          
           curl -s "http://localhost:7007/api/catalog/entities?filter=kind=location" \
             -H 'Content-Type: application/json' \
             -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
@@ -132,7 +142,7 @@ jobs:
 
       - name: Check backstage components
         run: |
-          echo "Show the locations ..."
+          echo "Show the components ..."
           curl -s "http://localhost:7007/api/catalog/entities?filter=kind=component" \
             -H 'Content-Type: application/json' \
             -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
