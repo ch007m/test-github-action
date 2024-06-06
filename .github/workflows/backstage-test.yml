@@ -59,6 +59,8 @@ jobs:
           yarn build:all
 
       - name: Configure app-config.local.yaml file
+        env:
+          GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.BACKSTAGE_GITHUB_TOKEN }}
         run: |
           cat <<EOF > backstage_env_secret.env
           APP_BASE_URL=http://localhost:3000
@@ -72,7 +74,7 @@ jobs:
           ARGOCD_ADMIN_USER=$ARGO_USERNAME
           ARGOCD_ADMIN_PASSWORD=$ARGO_PASSWORD
           
-          GITHUB_PERSONAL_ACCESS_TOKEN=ghp_S8GMxiyRdd34ttYU
+          GITHUB_PERSONAL_ACCESS_TOKEN=$GITHUB_PERSONAL_ACCESS_TOKEN
           
           GITEA_URL=$GITEA_URL
           GITEA_USERNAME=$GITEA_USERNAME
