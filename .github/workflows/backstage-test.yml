@@ -116,17 +116,7 @@ jobs:
       #      --data-raw '{"type":"url","target":"https://github.com/ch007m/test-github-action/blob/main/.github/resources/springboot-grpc-template/template.yaml"}'
 
       - name: Check backstage locations
-        run: |
-          echo "Show the locations ..."
-          curl -s "http://localhost:7007/api/catalog/entities?filter=kind=location" \
-          -H 'Content-Type: application/json' \
-          -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
-          --compressed \
-          | jq -r
-          
-          echo "Show template path ..."
-          ls -la $GITHUB_WORKSPACE/.github/resources/springboot-grpc-template/template.yaml
-          
+        run: |          
           get_entities_length() {
               curl -s -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" http://localhost:7007/api/catalog/entities?filter=kind=location | jq '. | length'
           }
@@ -156,6 +146,17 @@ jobs:
       - name: Check backstage components
         run: |
           echo "Show the components ..."
+          get_entities_length() {
+              curl -s -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" http://localhost:7007/api/catalog/entities?filter=kind=component | jq '. | length'
+          }
+          
+          until [[ $(get_entities_length) -gt 0 ]]; do
+             echo "Wait till component is created ..."
+             length=$(get_entities_length)
+             echo "Current length: $length"
+             sleep 5
+          done
+          
           curl -s "http://localhost:7007/api/catalog/entities?filter=kind=component" \
             -H 'Content-Type: application/json' \
             -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
