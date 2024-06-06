@@ -92,7 +92,9 @@ jobs:
         uses: JarvusInnovations/background-action@v1
         id: launch_backstage
         with:
-          run: yarn dev
+          run: |
+            export NODE_OPTIONS=--no-node-snapshot
+            yarn dev
           working-directory: backstage-playground
           tail: true
           log-output: true
