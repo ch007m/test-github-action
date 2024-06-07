@@ -133,7 +133,7 @@ jobs:
           CLUSTER_IP=$(docker inspect localdev-control-plane | jq -r '.[].NetworkSettings.Ports."6443/tcp"[0].HostIp')
           CLUSTER_PORT=$(docker inspect localdev-control-plane | jq -r '.[].NetworkSettings.Ports."6443/tcp"[0].HostPort')
           
-          echo "API_URL=https://$CLUSTER_IP:$CLUSTER_PORT"
+          API_URL=https://$CLUSTER_IP:$CLUSTER_PORT"
           echo "API_URL=$API_URL" >> "$GITHUB_ENV"
 
       - name: Logon to argocd server
