@@ -9,6 +9,9 @@ on:
 env:
   IDPBUILDER_VERSION: v0.4.1
 
+  ## TODO: To be passed to idpbuilder package
+  TEKTON_VERSION: v0.60.1
+
   KUBEVIRT_VERSION: v1.2.1
   KUBEVIRT_CDI_VERSION: v1.59.0
 
