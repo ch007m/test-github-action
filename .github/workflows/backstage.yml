@@ -159,10 +159,6 @@ jobs:
           yarn tsc
           yarn build:all
 
-      - name: List Argo Application ...
-        run: |
-          argocd app list
-
       - name: Configure app-config.local.yaml file
         env:
           GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.BACKSTAGE_GITHUB_TOKEN }}
@@ -242,3 +238,7 @@ jobs:
             -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
             --compressed \
            | jq -r
+
+      - name: List Argo Application ...
+        run: |
+          argocd app list
