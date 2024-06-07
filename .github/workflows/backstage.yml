@@ -20,7 +20,7 @@ env:
 jobs:
   setup-idp:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'qshift') }}
+    if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'qshift-all') }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
