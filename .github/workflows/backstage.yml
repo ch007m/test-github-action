@@ -8,7 +8,10 @@ on:
 
 env:
   IDPBUILDER_VERSION: v0.4.1
-  YQ_VERSION: v4.44.1
+
+  KUBEVIRT_VERSION: v1.2.1
+  KUBEVIRT_CDI_VERSION: v1.59.0
+
   QUAY_ORG: snowdrop
 
 jobs:
@@ -28,22 +31,76 @@ jobs:
 
           idpbuilder version
 
-      - name: Install yq
-        run: |
-          yq -V
-          sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/$YQ_VERSION/yq_linux_amd64
-          sudo chmod +x /usr/local/bin/yq
-
-      - name: Create an IDP cluster and install the packages
-        run: |
-          PACKAGES_DIR=.github/resources/idp/packages
-          idpbuilder create -p $PACKAGES_DIR/tekton -p $PACKAGES_DIR/backstage
-
       - name: Install Argocd client
         run: |
           curl -sSL -o argocd-linux-amd64 https://github.com/argoproj/argo-cd/releases/latest/download/argocd-linux-amd64
           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
-          rm argocd-linux-amd64
+          rm argocd-linux-amd64    
+
+      #- name: Install yq
+      #  run: |
+      #    yq -V
+      #    sudo wget -O /usr/local/bin/yq https://github.com/mikefarah/yq/releases/download/$YQ_VERSION/yq_linux_amd64
+      #    sudo chmod +x /usr/local/bin/yq
+
+      - name: Create an IDP cluster and install the packages
+        run: |
+          PACKAGES_DIR=.github/resources/idp/packages
+          idpbuilder create \
+            -p $PACKAGES_DIR/tekton \
+            -p $PACKAGES_DIR/backstage
+
+      - name: Install Kubevirt
+        run: |
+          function is_nested_virt_enabled() {
+            kvm_nested="unknown"
+            if [ -f "/sys/module/kvm_intel/parameters/nested" ]; then
+              kvm_nested=$( cat /sys/module/kvm_intel/parameters/nested )
+            elif [ -f "/sys/module/kvm_amd/parameters/nested" ]; then
+              kvm_nested=$( cat /sys/module/kvm_amd/parameters/nested )
+            fi
+            [ "$kvm_nested" == "1" ] || [ "$kvm_nested" == "Y" ] || [ "$kvm_nested" == "y" ]
+          }
+          
+          echo "Deploying KubeVirt"
+          kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${KUBEVIRT_VERSION}/kubevirt-operator.yaml"
+          kubectl apply -f "https://github.com/kubevirt/kubevirt/releases/download/${KUBEVIRT_VERSION}/kubevirt-cr.yaml"
+          
+          echo "Configuring Kubevirt to use emulation if needed"
+          if ! is_nested_virt_enabled; then
+            kubectl -n kubevirt patch kubevirt kubevirt --type=merge --patch '{"spec":{"configuration":{"developerConfiguration":{"useEmulation":true}}}}'
+          fi
+          
+          echo "Deploying KubeVirt containerized-data-importer"
+          kubectl apply -f "https://github.com/kubevirt/containerized-data-importer/releases/download/${KUBEVIRT_CDI_VERSION}/cdi-operator.yaml"
+          kubectl apply -f "https://github.com/kubevirt/containerized-data-importer/releases/download/${KUBEVIRT_CDI_VERSION}/cdi-cr.yaml"
+          
+          echo "Waiting for KubeVirt to be ready"
+          kubectl wait --for=condition=Available kubevirt kubevirt --namespace=kubevirt --timeout=5m
+
+      - name: Give more RBAC to Virt resources and RW for PVC
+        run: |
+          echo "Patch the StorageProfile to use the storageclass standard and give ReadWrite access"
+          kubectl get StorageProfile
+          kubectl patch --type merge -p '{"spec": {"claimPropertySets": [{"accessModes": ["ReadWriteOnce"], "volumeMode": "Filesystem"}]}}' StorageProfile standard
+
+          kubectl create clusterrolebinding pod-kubevirt-viewer --clusterrole=kubevirt.io:view --serviceaccount=default:default
+          kubectl create clusterrolebinding cdi-kubevirt-viewer --clusterrole=cdi.kubevirt.io:view --serviceaccount=default:default
+          kubectl create clusterrolebinding quarkus-dev --clusterrole=admin --serviceaccount=default:default
+
+      - name: Install our Fedora podman image
+        run: |
+          kubectl create ns vm-images
+          kubectl apply -n vm-images -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/quay-to-pvc-datavolume.yml
+          kubectl wait datavolume -n vm-images podman-remote --for condition=Ready=True --timeout=90s
+
+      - name: Create ssh key, secret and VM
+        run: |
+          ssh-keygen -N "" -f id_rsa
+          kubectl create secret generic quarkus-dev-ssh-key -n default --from-file=key=id_rsa.pub
+          
+          kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/quarkus-dev-vm.yml
+          kubectl wait --for=condition=Ready vm/quarkus-dev --timeout=360s    
 
       - name: Set idp env variables
         run: |
@@ -104,6 +161,8 @@ jobs:
           argocd app list
 
       - name: Configure app-config.local.yaml file
+        env:
+          GITHUB_PERSONAL_ACCESS_TOKEN: ${{ secrets.BACKSTAGE_GITHUB_TOKEN }}
         run: |
           cat <<EOF > backstage_env_secret.env
           APP_BASE_URL=http://localhost:3000
@@ -117,7 +176,7 @@ jobs:
           ARGOCD_ADMIN_USER=$ARGO_USERNAME
           ARGOCD_ADMIN_PASSWORD=$ARGO_PASSWORD
           
-          GITHUB_PERSONAL_ACCESS_TOKEN=ghp_S8GMxiyRdd34ttYU
+          GITHUB_PERSONAL_ACCESS_TOKEN=$GITHUB_PERSONAL_ACCESS_TOKEN
           
           GITEA_URL=$GITEA_URL
           GITEA_USERNAME=$GITEA_USERNAME
@@ -136,23 +195,13 @@ jobs:
         # https://github.com/JarvusInnovations/background-action
         uses: JarvusInnovations/background-action@v1
         with:
-          run: yarn dev
+          run: |
+            export NODE_OPTIONS=--no-node-snapshot
+            yarn dev
+          working-directory: backstage-playground
+          tail: true
+          log-output: true
           wait-on: http://localhost:7007/settings
-
-      #- name: Launch backstage
-      #  working-directory: backstage-playground
-      #  run: |
-      #    yarn workspace backend start &
-      #    yarn workspace app start &
-      #    until curl --output /dev/null --head --silent --fail http://localhost:3000; do echo "Wait till backstage is running ...."; sleep 5; done
-
-      - name: Import a template
-        runt: |
-          curl -s 'http://localhost:7007/api/catalog/locations' \
-            -X POST \
-            -H 'Content-Type: application/json' \
-            -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
-            --data-raw '{"type":"url","target":"https://github.com/ch007m/test-github-action/blob/main/.github/resources/springboot-grpc-template/template.yaml"}'
 
       - name: Check backstage resources
         run: |
@@ -169,11 +218,22 @@ jobs:
            -X POST \
            -H 'Content-Type: application/json' \
            -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
-           -d @.github/resources/scaffold_springboot.json
+           -d @.github/resources/qshift/quarkus-app.json
 
       - name: Check backstage components
         run: |
-          echo "Show the locations ..."
+          echo "Show the components ..."
+          get_entities_length() {
+              curl -s -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" http://localhost:7007/api/catalog/entities?filter=kind=component | jq '. | length'
+          }
+          
+          until [[ $(get_entities_length) -gt 0 ]]; do
+             echo "Wait till component is created ..."
+             length=$(get_entities_length)
+             echo "Current length: $length"
+             sleep 5
+          done
+          
           curl -s "http://localhost:7007/api/catalog/entities?filter=kind=component" \
             -H 'Content-Type: application/json' \
             -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
