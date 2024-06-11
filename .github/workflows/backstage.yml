@@ -95,7 +95,7 @@ jobs:
         run: |
           kubectl create ns vm-images
           kubectl apply -n vm-images -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/quay-to-pvc-datavolume.yml
-          kubectl wait datavolume -n vm-images podman-remote --for condition=Ready=True --timeout=90s
+          kubectl wait datavolume -n vm-images podman-remote --for condition=Ready=True --timeout=360s
 
       - name: Create ssh key, secret and VM
         run: |
