@@ -11,6 +11,7 @@ env:
 
   ## TODO: To be passed to idpbuilder package
   TEKTON_VERSION: v0.60.1
+  TEKTON_CLIENT_VERSION: 0.37.0
 
   KUBEVIRT_VERSION: v1.2.1
   KUBEVIRT_CDI_VERSION: v1.59.0
@@ -42,11 +43,8 @@ jobs:
 
       - name: Install tekton client
         run: |
-          sudo apt update;sudo apt install -y gnupg
-          sudo mkdir -p /etc/apt/keyrings/
-          sudo gpg --no-default-keyring --keyring /etc/apt/keyrings/tektoncd.gpg --keyserver keyserver.ubuntu.com --recv-keys 3EFE0E0A2F2F60AA
-          echo "deb [signed-by=/etc/apt/keyrings/tektoncd.gpg] http://ppa.launchpad.net/tektoncd/cli/ubuntu eoan main"|sudo tee /etc/apt/sources.list.d/tektoncd-ubuntu-cli.list
-          sudo apt update && sudo apt install -y tektoncd-cli
+          curl -sSL "https://github.com/tektoncd/cli/releases/download/v{$TEKTON_CLIENT_VERSION}/tkn_${TEKTON_CLIENT_VERSION}_Linux_x86_64.tar.gz" -o tkn.tar.gz
+          sudo tar xvzf tkn.tar.gz -C /usr/local/bin/ tkn
 
       - name: Create an IDP cluster and install the packages
         run: |
