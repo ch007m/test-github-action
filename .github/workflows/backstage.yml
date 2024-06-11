@@ -267,4 +267,5 @@ jobs:
           sleep 5
           done
           
+          echo "Pipelineruns starting ..."
           tkn pipelinerun logs -f
