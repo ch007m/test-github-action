@@ -40,6 +40,14 @@ jobs:
           sudo install -m 555 argocd-linux-amd64 /usr/local/bin/argocd
           rm argocd-linux-amd64
 
+      - name: Install tekton client
+        run: |
+          sudo apt update;sudo apt install -y gnupg
+          sudo mkdir -p /etc/apt/keyrings/
+          sudo gpg --no-default-keyring --keyring /etc/apt/keyrings/tektoncd.gpg --keyserver keyserver.ubuntu.com --recv-keys 3EFE0E0A2F2F60AA
+          echo "deb [signed-by=/etc/apt/keyrings/tektoncd.gpg] http://ppa.launchpad.net/tektoncd/cli/ubuntu eoan main"|sudo tee /etc/apt/sources.list.d/tektoncd-ubuntu-cli.list
+          sudo apt update && sudo apt install -y tektoncd-cli
+
       - name: Create an IDP cluster and install the packages
         run: |
           PACKAGES_DIR=.github/resources/idp/packages
@@ -247,3 +255,7 @@ jobs:
       - name: List Argo Application ...
         run: |
           argocd app list
+
+      - name: Watch tekton resources ...
+        run: |
+          tkn pipelinerun logs -f
