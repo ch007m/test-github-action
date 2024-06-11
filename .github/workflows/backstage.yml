@@ -257,4 +257,14 @@ jobs:
 
       - name: Watch tekton resources ...
         run: |
+          get_pipelineruns_length() {
+            tkn pipelinerun list -o json | jq -r '.items | length'
+          }
+          
+          until [[ $(get_pipelineruns_length) -gt 0 ]]; do
+            echo "Wait till pipelineRuns have been created ..."
+            echo "Current length: $(get_pipelineruns_length)"
+          sleep 5
+          done
+          
           tkn pipelinerun logs -f
