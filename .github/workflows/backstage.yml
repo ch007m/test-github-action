@@ -119,9 +119,13 @@ jobs:
           
           ARGO_USERNAME=$(idpbuilder get secrets -p argocd -ojson | jq -r '.[].data.username')
           ARGO_PASSWORD=$(idpbuilder get secrets -p argocd -ojson | jq -r '.[].data.password')
-          ARGO_SERVER="https://$(kubectl get ingress/argocd-server-ingress -n argocd -ojson | jq -r '.spec.rules[0].host'):8443"
+          ARGO_SERVER_HOST=$(kubectl get ingress/argocd-server-ingress -n argocd -ojson | jq -r '.spec.rules[0].host')
+          ARGO_SERVER_PORT=8443
+          ARGO_SERVER_URL="https://$ARGO_SERVER_HOST:$ARGO_SERVER_PORT"
           echo "ARGO_PASSWORD=$ARGO_PASSWORD" >> "$GITHUB_ENV"
-          echo "ARGO_SERVER=$ARGO_SERVER" >> "$GITHUB_ENV"
+          echo "ARGO_SERVER_HOST=ARGO_SERVER_HOST" >> "$GITHUB_ENV"
+          echo "ARGO_SERVER_PORT=$ARGO_SERVER_PORT" >> "$GITHUB_ENV"
+          echo "ARGO_SERVER=$ARGO_SERVER_URL" >> "$GITHUB_ENV"
           echo "ARGO_USERNAME=$ARGO_USERNAME" >> "$GITHUB_ENV"
           
           SERVICE_ACCOUNT_TOKEN=$(kubectl get secret backstage-secret -n backstage -o json | jq -r '.data.token' | base64 -d)
@@ -138,7 +142,7 @@ jobs:
 
       - name: Logon to argocd server
         run: |
-          argocd --insecure login $(kubectl get ingress/argocd-server-ingress -n argocd -ojson | jq -r '.spec.rules[0].host'):8443 --username $ARGO_USERNAME --password $ARGO_PASSWORD
+          argocd --insecure login $ARGO_SERVER_HOST:$ARGO_SERVER_PORT --username $ARGO_USERNAME --password $ARGO_PASSWORD
 
       - name: Checkout QShift backstage playground
         uses: actions/checkout@v4
