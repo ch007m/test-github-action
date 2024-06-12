@@ -138,7 +138,7 @@ jobs:
 
       - name: Logon to argocd server
         run: |
-          argocd --insecure login $ARGO_SERVER --username $ARGO_USERNAME --password $ARGO_PASSWORD
+          argocd --insecure login $(kubectl get ingress/argocd-server-ingress -n argocd -ojson | jq -r '.spec.rules[0].host'):8443 --username $ARGO_USERNAME --password $ARGO_PASSWORD
 
       - name: Checkout QShift backstage playground
         uses: actions/checkout@v4
