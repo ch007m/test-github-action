@@ -253,7 +253,7 @@ jobs:
             --compressed \
            | jq -r
 
-      - name: List Argo Application ...
+      - name: List Argo Application ....
         run: |
           argocd app list
 
