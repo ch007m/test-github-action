@@ -109,13 +109,13 @@ jobs:
 
       - name: Set idp env variables
         run: |
-          # GITEA_URL=$(kubectl get ingress/my-gitea -n gitea -ojson | jq -r '.spec.rules[0].host')
-          # GITEA_USERNAME=$(idpbuilder get secrets -p gitea -ojson | jq -r '.[].data.username')
-          # GITEA_PASSWORD=$(idpbuilder get secrets -p gitea -ojson | jq -r '.[].data.password')
+          GITEA_URL=$(kubectl get ingress/my-gitea -n gitea -ojson | jq -r '.spec.rules[0].host')
+          GITEA_USERNAME=$(idpbuilder get secrets -p gitea -ojson | jq -r '.[].data.username')
+          GITEA_PASSWORD=$(idpbuilder get secrets -p gitea -ojson | jq -r '.[].data.password')
 
-          # echo "GITEA_URL=$GITEA_URL" >> "$GITHUB_ENV"          
-          # echo "GITEA_USERNAME=$GITEA_USERNAME" >> "$GITHUB_ENV"  
-          # echo "GITEA_PASSWORD=$GITEA_PASSWORD" >> "$GITHUB_ENV"
+          echo "GITEA_URL=$GITEA_URL" >> "$GITHUB_ENV"          
+          echo "GITEA_USERNAME=$GITEA_USERNAME" >> "$GITHUB_ENV"  
+          echo "GITEA_PASSWORD=$GITEA_PASSWORD" >> "$GITHUB_ENV"
           
           ARGO_USERNAME=$(idpbuilder get secrets -p argocd -ojson | jq -r '.[].data.username')
           ARGO_PASSWORD=$(idpbuilder get secrets -p argocd -ojson | jq -r '.[].data.password')
@@ -176,9 +176,9 @@ jobs:
           ARGOCD_ADMIN_USER=$ARGO_USERNAME
           ARGOCD_ADMIN_PASSWORD=$ARGO_PASSWORD
           GITHUB_PERSONAL_ACCESS_TOKEN=$GITHUB_PERSONAL_ACCESS_TOKEN
-          #GITEA_URL=$GITEA_URL
-          #GITEA_USERNAME=$GITEA_USERNAME
-          #GITEA_PASSWORD=$GITEA_PASSWORD
+          GITEA_URL=$GITEA_URL
+          GITEA_USERNAME=$GITEA_USERNAME
+          GITEA_PASSWORD='$GITEA_PASSWORD'
           KUBERNETES_API_URL=$API_URL
           SERVICE_ACCOUNT_TOKEN=$SERVICE_ACCOUNT_TOKEN
           EOF
