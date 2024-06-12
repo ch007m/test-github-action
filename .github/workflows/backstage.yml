@@ -263,11 +263,33 @@ jobs:
             tkn pipelinerun list -o json | jq -r '.items | length'
           }
           
-          until [[ $(get_pipelineruns_length) -gt 0 ]]; do
-            echo "Wait till pipelineRuns have been created ..."
-            echo "Current length: $(get_pipelineruns_length)"
-          sleep 5
-          done
+          #until [[ $(get_pipelineruns_length) -gt 0 ]]; do
+          #  echo "Wait till pipelineRuns have been created ..."
+          #  echo "Current length: $(get_pipelineruns_length)"
+          #sleep 5
+          #done
           
           echo "Pipelineruns starting ..."
-          tkn pipelinerun logs -f
+          for i in `seq 10`; do
+            tkn pipelinerun logs
+            sleep 20
+          done
+
+      - name: Grab data
+        run: |
+          echo "Get list of applications ..."
+          argocd app list
+          
+          echo "Get list of applications ..."
+          kubectl get applications -A
+
+      - name: Execute if the job was cancelled
+        if: ${{ cancelled() }}
+        run: |
+          echo "Get list of applications ..."
+          argocd app list
+          
+          echo "Get list of applications ..."
+          kubectl get applications -A
+          
+          
