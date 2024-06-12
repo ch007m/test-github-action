@@ -242,9 +242,8 @@ jobs:
           
           until [[ $(get_entities_length) -gt 0 ]]; do
              echo "Wait till component is created ..."
-             length=$(get_entities_length)
-             echo "Current length: $length"
-             sleep 5
+             echo "Component(s) length: $(get_entities_length)"
+             sleep 10
           done
           
           curl -s "http://localhost:7007/api/catalog/entities?filter=kind=component" \
@@ -291,5 +290,8 @@ jobs:
           
           echo "Get list of applications ..."
           kubectl get applications -A
+          
+          echo "Get pods ..."
+          kubectl get pods -A
           
           
