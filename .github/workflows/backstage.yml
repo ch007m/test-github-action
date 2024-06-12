@@ -7,7 +7,7 @@ on:
       - main
 
 env:
-  IDPBUILDER_VERSION: v0.4.1
+  IDPBUILDER_VERSION: v0.5.0
 
   ## TODO: To be passed to idpbuilder package
   TEKTON_VERSION: v0.60.1
@@ -52,7 +52,8 @@ jobs:
           PACKAGES_DIR=.github/resources/idp/packages
           idpbuilder create \
             -p $PACKAGES_DIR/tekton \
-            -p $PACKAGES_DIR/backstage
+            -p $PACKAGES_DIR/backstage \
+            -c argocd:$PACKAGES_DIR/argocd/cm.yaml
 
        #- name: Install Kubevirt
        #  run: |
@@ -108,21 +109,20 @@ jobs:
 
       - name: Set idp env variables
         run: |
-          GITEA_PASSWORD=$(kubectl get secret/gitea-credential -n gitea -ojson | jq -r '.data.password' | base64 -d)
-          GITEA_USERNAME=$(kubectl get secret/gitea-credential -n gitea -ojson | jq -r '.data.username' | base64 -d)
-          GITEA_URL=$(kubectl get ingress/my-gitea -n gitea -ojson | jq -r '.spec.rules[0].host')
-          echo "GITEA_URL=$GITEA_URL" >> "$GITHUB_ENV"          
-          
-          # TODO: To be fixed using new idpbuilder release
+          # GITEA_URL=$(kubectl get ingress/my-gitea -n gitea -ojson | jq -r '.spec.rules[0].host')
+          # GITEA_USERNAME=$(idpbuilder get secrets -p gitea -ojson | jq -r '.[].data.username')
+          # GITEA_PASSWORD=$(idpbuilder get secrets -p gitea -ojson | jq -r '.[].data.password')
+
+          # echo "GITEA_URL=$GITEA_URL" >> "$GITHUB_ENV"          
+          # echo "GITEA_USERNAME=$GITEA_USERNAME" >> "$GITHUB_ENV"  
           # echo "GITEA_PASSWORD=$GITEA_PASSWORD" >> "$GITHUB_ENV"
-          echo "GITEA_PASSWORD=ghp_S8GMxiyRdd34ttYU" >> "$GITHUB_ENV"
           
-          echo "GITEA_USERNAME=$GITEA_USERNAME" >> "$GITHUB_ENV"
-  
-          ARGO_PASSWORD=$(kubectl get secret/argocd-initial-admin-secret -n argocd -ojson | jq -r '.data.password' | base64 -d)
+          ARGO_USERNAME=$(idpbuilder get secrets -p argocd -ojson | jq -r '.[].data.username')
+          ARGO_PASSWORD=$(idpbuilder get secrets -p argocd -ojson | jq -r '.[].data.password')
+          ARGO_SERVER="https://$(kubectl get ingress/argocd-server-ingress -n argocd -ojson | jq -r '.spec.rules[0].host'):8443"
           echo "ARGO_PASSWORD=$ARGO_PASSWORD" >> "$GITHUB_ENV"
-          echo "ARGO_SERVER=argocd.cnoe.localtest.me:8443" >> "$GITHUB_ENV"
-          echo "ARGO_USERNAME=admin" >> "$GITHUB_ENV"
+          echo "ARGO_SERVER=$ARGO_SERVER" >> "$GITHUB_ENV"
+          echo "ARGO_USERNAME=$ARGO_USERNAME" >> "$GITHUB_ENV"
           
           SERVICE_ACCOUNT_TOKEN=$(kubectl get secret backstage-secret -n backstage -o json | jq -r '.data.token' | base64 -d)
           echo "SERVICE_ACCOUNT_TOKEN=$SERVICE_ACCOUNT_TOKEN" >> "$GITHUB_ENV"
@@ -133,7 +133,6 @@ jobs:
           echo "Get node IP and port to access it"
           CLUSTER_IP=$(docker inspect localdev-control-plane | jq -r '.[].NetworkSettings.Ports."6443/tcp"[0].HostIp')
           CLUSTER_PORT=$(docker inspect localdev-control-plane | jq -r '.[].NetworkSettings.Ports."6443/tcp"[0].HostPort')
-          
           API_URL="https://$CLUSTER_IP:$CLUSTER_PORT"
           echo "API_URL=$API_URL" >> "$GITHUB_ENV"
 
@@ -167,21 +166,15 @@ jobs:
           cat <<EOF > backstage_env_secret.env
           APP_BASE_URL=http://localhost:3000
           BACKEND_BASE_URL=http://localhost:7007
-          
           BACKSTAGE_AUTH_SECRET=$BACKSTAGE_AUTH_SECRET
-          
           TEMPLATE_URL=https://github.com/q-shift/backstage-playground/blob/main/locations/root.yaml
-          
           ARGOCD_SERVER=$ARGO_SERVER
           ARGOCD_ADMIN_USER=$ARGO_USERNAME
           ARGOCD_ADMIN_PASSWORD=$ARGO_PASSWORD
-          
           GITHUB_PERSONAL_ACCESS_TOKEN=$GITHUB_PERSONAL_ACCESS_TOKEN
-          
-          GITEA_URL=$GITEA_URL
-          GITEA_USERNAME=$GITEA_USERNAME
-          GITEA_PASSWORD=$GITEA_PASSWORD
-          
+          #GITEA_URL=$GITEA_URL
+          #GITEA_USERNAME=$GITEA_USERNAME
+          #GITEA_PASSWORD=$GITEA_PASSWORD
           KUBERNETES_API_URL=$API_URL
           SERVICE_ACCOUNT_TOKEN=$SERVICE_ACCOUNT_TOKEN
           EOF
@@ -197,6 +190,7 @@ jobs:
         with:
           run: |
             export NODE_OPTIONS=--no-node-snapshot
+            export NODE_TLS_REJECT_UNAUTHORIZED=0 
             yarn dev
           working-directory: backstage-playground
           tail: true
@@ -222,6 +216,10 @@ jobs:
             -H "Authorization: Bearer $BACKSTAGE_AUTH_SECRET" \
             --compressed \
            | jq -r
+
+      - name: Create dummy namespace where resources should be created/deployed
+        run: |
+           kubectl create ns dummy
 
       - name : Scaffold a project
         run: |

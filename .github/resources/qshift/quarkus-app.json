@@ -26,10 +26,10 @@
       "host": "github.com",
       "org": "ch007m"
     },
-    "namespace": "cmoullia",
+    "namespace": "dummy",
     "imageRepository": "quay.io",
     "virtualMachineName": "quarkus-dev",
-    "virtualMachineNamespace": "cmoullia",
+    "virtualMachineNamespace": "dummy",
     "imageUrl": "quay.io/ch007m/my-quarkus-app"
   },
   "secrets": {}
