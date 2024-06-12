@@ -21,6 +21,8 @@ env:
 jobs:
   setup-idp:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     if: ${{ github.event_name == 'push' && contains( github.event.head_commit.message, 'qshift') }}
     steps:
       - name: Checkout
@@ -225,6 +227,12 @@ jobs:
         run: |
            kubectl create ns dummy
 
+      - name: Delete application reposiory
+        run: |
+          gh repo delete github.com/ch007m/my-quarkus-app-job --yes
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name : Scaffold a project
         run: |
            curl -s 'http://localhost:7007/api/scaffolder/v2/tasks' \
@@ -252,7 +260,7 @@ jobs:
             --compressed \
            | jq -r
 
-      - name: List Argo Application ....
+      - name: List Argo Application ...
         run: |
           argocd app list
 

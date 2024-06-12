@@ -1,7 +1,7 @@
 {
   "templateRef": "template:default/quarkus-application",
   "values": {
-    "component_id": "my-quarkus-app",
+    "component_id": "my-quarkus-app-job",
     "owner": "user:guest",
     "native": false,
     "quarkusVersion": "io.quarkus.platform:3.11",
