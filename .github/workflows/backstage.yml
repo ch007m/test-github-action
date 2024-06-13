@@ -21,6 +21,8 @@ env:
   REPO_ORG: ch007m
   QUAY_ORG: snowdrop
 
+  KUBE_NAMESPACE: dummy
+
 jobs:
   setup-idp:
     runs-on: ubuntu-latest
@@ -229,9 +231,9 @@ jobs:
             --compressed \
            | jq -r
 
-      - name: Create dummy namespace where resources should be created/deployed
+      - name: Create ${KUBE_NAMESPACE} namespace where resources should be created/deployed
         run: |
-           kubectl create ns dummy
+           kubectl create ns ${KUBE_NAMESPACE}
 
       - name: Delete application repository
         run: |
@@ -292,34 +294,6 @@ jobs:
 
       - name: Grab data
         run: |
-          echo "list the projects, applications ..."
-          kubectl get appprojects -A
-          kubectl get applications -A
-          
-          echo "Detail the applications and projects ..."
-          kubectl get appprojects -A -oyaml
-          kubectl describe applications -A
-          
-          echo "Get pods ..."
-          kubectl get pods -A
-          
-          echo "Get Tekton ..."
-          kubectl get pipeline -A
-          kubectl get pipelineruns -A
-          kubectl get tasks -A
-          kubectl get taskruns -A
-
-      - name: Execute if the job was cancelled
-        if: ${{ cancelled() }}
-        run: |
-          echo "list the projects, applications ..."
-          kubectl get appprojects -A
-          kubectl get applications -A
-          
-          echo "Detail the applications and projects ..."
-          kubectl get appprojects -A -oyaml
-          kubectl describe applications -A
-          
           echo "Get pods ...."
           kubectl get pods -A
           
@@ -328,5 +302,39 @@ jobs:
           kubectl get pipelineruns -A
           kubectl get tasks -A
           kubectl get taskruns -A
+          
+          echo "list the projects, applications ..."
+          kubectl get appprojects -A
+          
+          argocd app list -p my-quarkus-app -N argocd
+          argocd app list -p default -N ${KUBE_NAMESPACE}
+          
+          echo "Detail the applications and projects ..."
+          kubectl get appprojects -A -oyaml
+          kubectl describe applications -n ${KUBE_NAMESPACE}
+
+      - name: Execute if the job was cancelled
+        if: ${{ cancelled() }}
+        run: |
+          echo "Get pods ...."
+          kubectl get pods -A
+          
+          echo "Get Tekton ..."
+          kubectl get pipeline -A
+          kubectl get pipelineruns -A
+          kubectl get tasks -A
+          kubectl get taskruns -A
+          
+          echo "list the projects, applications ..."
+          kubectl get appprojects -A
+          
+          argocd app list -p my-quarkus-app -N argocd
+          argocd app list -p default -N ${KUBE_NAMESPACE}
+          
+          echo "Detail the applications and projects ..."
+          kubectl get appprojects -A -oyaml
+          kubectl describe applications -n ${KUBE_NAMESPACE}
+          
+
           
           
