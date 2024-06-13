@@ -278,13 +278,13 @@ jobs:
       - name: Watch tekton resources ...
         run: |
           get_pipelineruns_length() {
-            tkn pipelinerun list -o json | jq -r '.items | length'
+            tkn pipelinerun list -n ${KUBE_NAMESPACE} -o json | jq -r '.items | length'
           }
                     
           echo "Pipelineruns starting ..."
           for i in `seq 10`; do
             if [[ $(get_pipelineruns_length) -gt 0 ]]; then
-              tkn pipelinerun logs $REPO_NAME-build-test-push -f
+              tkn pipelinerun logs -n ${KUBE_NAMESPACE} $REPO_NAME-build-test-push -f
             else
               echo "Wait till we have pipelineruns ..." 
               sleep 20
@@ -301,10 +301,16 @@ jobs:
           # kubectl get cm/argocd-cmd-params-cm -n argocd -oyaml
           # kubectl get cm/argocd-rbac-cm -n argocd -oyaml
           
-          echo "Get Tekton ..."
+          echo "Get Tekton pipeline ..."
           kubectl get pipeline -A
+          
+          echo "Get Tekton pipelineruns ..."
           kubectl get pipelineruns -A
+          
+          echo "Get Tekton Tasks ..."
           kubectl get tasks -A
+          
+          echo "Get Tekton taskruns ..."
           kubectl get taskruns -A
           
           echo "List Argo Application ..."
@@ -332,10 +338,16 @@ jobs:
           # kubectl get cm/argocd-cmd-params-cm -n argocd -oyaml
           # kubectl get cm/argocd-rbac-cm -n argocd -oyaml
           
-          echo "Get Tekton ..."
+          echo "Get Tekton pipeline ..."
           kubectl get pipeline -A
+          
+          echo "Get Tekton pipelineruns ..."
           kubectl get pipelineruns -A
+          
+          echo "Get Tekton Tasks ..."
           kubectl get tasks -A
+          
+          echo "Get Tekton taskruns ..."
           kubectl get taskruns -A
           
           echo "List Argo Application ..."
