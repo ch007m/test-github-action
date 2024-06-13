@@ -282,7 +282,7 @@ jobs:
                     
           echo "Pipelineruns starting ..."
           for i in `seq 10`; do
-            if $(get_pipelineruns_length) -gt 0; then
+            if [[ $(get_pipelineruns_length) -gt 0 ]]; then
               tkn pipelinerun logs $REPO_NAME-build-test-push -f
             else
               echo "Wait till we have pipelineruns ..." 
@@ -292,12 +292,13 @@ jobs:
 
       - name: Grab data
         run: |
-          echo "Get list of applications ..."
+          echo "list the projects, applications ..."
+          kubectl get appprojects -A
           kubectl get applications -A
           
           echo "Detail the applications and projects ..."
-          kubectl get applications -A -oyaml
           kubectl get appprojects -A -oyaml
+          kubectl describe applications -A
           
           echo "Get pods ..."
           kubectl get pods -A
@@ -311,12 +312,13 @@ jobs:
       - name: Execute if the job was cancelled
         if: ${{ cancelled() }}
         run: |
-          echo "Get list of applications ..."
+          echo "list the projects, applications ..."
+          kubectl get appprojects -A
           kubectl get applications -A
           
           echo "Detail the applications and projects ..."
-          kubectl get applications -A -oyaml
           kubectl get appprojects -A -oyaml
+          kubectl describe applications -A
           
           echo "Get pods ..."
           kubectl get pods -A
