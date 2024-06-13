@@ -229,7 +229,12 @@ jobs:
 
       - name: Delete application reposiory
         run: |
-          gh repo delete github.com/ch007m/my-quarkus-app-job --yes
+          REPO_ORG=ch007m
+          REPO_NAME=my-quarkus-app-job
+          if gh repo view $REPO_ORG/$REPO_NAME > /dev/null 2>&1; then
+            echo "Repository '$OWNER/$REPO' exists."
+            gh repo delete $REPO_ORG/$REPO_NAME --yes
+          fi
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
