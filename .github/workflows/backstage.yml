@@ -276,17 +276,15 @@ jobs:
           get_pipelineruns_length() {
             tkn pipelinerun list -o json | jq -r '.items | length'
           }
-          
-          #until [[ $(get_pipelineruns_length) -gt 0 ]]; do
-          #  echo "Wait till pipelineRuns have been created ..."
-          #  echo "Current length: $(get_pipelineruns_length)"
-          #sleep 5
-          #done
-          
+                    
           echo "Pipelineruns starting ..."
           for i in `seq 10`; do
-            tkn pipelinerun logs $REPO_NAME-build-test-push -f
-            sleep 20
+            if $(get_pipelineruns_length) -gt 0; then
+              tkn pipelinerun logs $REPO_NAME-build-test-push -f
+            else
+              echo "Wait till we have pipelineruns ..." 
+              sleep 20
+            fi
           done
 
       - name: Grab data
@@ -296,6 +294,15 @@ jobs:
           
           echo "Get list of applications ..."
           kubectl get applications -A
+          
+          echo "Get pods ..."
+          kubectl get pods -A
+          
+          echo "Get Tekton ..."
+          kubectl get pipeline -A
+          kubectl get pipelineruns -A
+          kubectl get tasks -A
+          kubectl get taskruns -A
 
       - name: Execute if the job was cancelled
         if: ${{ cancelled() }}
@@ -308,5 +315,11 @@ jobs:
           
           echo "Get pods ..."
           kubectl get pods -A
+          
+          echo "Get Tekton ..."
+          kubectl get pipeline -A
+          kubectl get pipelineruns -A
+          kubectl get tasks -A
+          kubectl get taskruns -A
           
           
