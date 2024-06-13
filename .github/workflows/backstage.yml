@@ -145,9 +145,12 @@ jobs:
           API_URL="https://$CLUSTER_IP:$CLUSTER_PORT"
           echo "API_URL=$API_URL" >> "$GITHUB_ENV"
 
-      - name: Logon to argocd server
+      - name: Logon anc configure ArgoCD server
         run: |
           argocd --insecure login $ARGO_SERVER_HOST:$ARGO_SERVER_PORT --username $ARGO_USERNAME --password $ARGO_PASSWORD
+          
+          echo "Allow argocd to handle applications in all the namespaces" 
+          argocd proj add-source-namespace default '*'
 
       - name: Checkout QShift backstage playground
         uses: actions/checkout@v4
@@ -290,10 +293,11 @@ jobs:
       - name: Grab data
         run: |
           echo "Get list of applications ..."
-          argocd app list
-          
-          echo "Get list of applications ..."
           kubectl get applications -A
+          
+          echo "Detail the applications and projects ..."
+          kubectl get applications -A -oyaml
+          kubectl get appprojects -A -oyaml
           
           echo "Get pods ..."
           kubectl get pods -A
@@ -308,10 +312,11 @@ jobs:
         if: ${{ cancelled() }}
         run: |
           echo "Get list of applications ..."
-          argocd app list
-          
-          echo "Get list of applications ..."
           kubectl get applications -A
+          
+          echo "Detail the applications and projects ..."
+          kubectl get applications -A -oyaml
+          kubectl get appprojects -A -oyaml
           
           echo "Get pods ..."
           kubectl get pods -A
