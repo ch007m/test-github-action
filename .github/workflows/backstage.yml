@@ -275,10 +275,6 @@ jobs:
             --compressed \
            | jq -r
 
-      - name: List Argo Application ...
-        run: |
-          argocd app list
-
       - name: Watch tekton resources ...
         run: |
           get_pipelineruns_length() {
@@ -300,10 +296,10 @@ jobs:
           echo "Get pods ...."
           kubectl get pods -A
           
-          echo "Check argocd cm config ..."
-          kubectl get cm/argocd-cm -n argocd -oyaml
-          kubectl get cm/argocd-cmd-params-cm -n argocd -oyaml
-          kubectl get cm/argocd-rbac-cm -n argocd -oyaml
+          # echo "Check argocd cm config ..."
+          # kubectl get cm/argocd-cm -n argocd -oyaml
+          # kubectl get cm/argocd-cmd-params-cm -n argocd -oyaml
+          # kubectl get cm/argocd-rbac-cm -n argocd -oyaml
           
           echo "Get Tekton ..."
           kubectl get pipeline -A
@@ -311,11 +307,14 @@ jobs:
           kubectl get tasks -A
           kubectl get taskruns -A
           
+          echo "List Argo Application ..."
+          argocd app list
+          
           echo "list the Argocd projects ..."
           kubectl get appprojects -A
           
           echo "list the Argocd applications: parent and children ..."
-          argocd app list -p my-quarkus-app -N argocd
+          argocd app list -p ${REPO_NAME} -N argocd
           argocd app list -p default -N ${KUBE_NAMESPACE}
           
           echo "Detail the applications and projects ..."
@@ -328,10 +327,10 @@ jobs:
           echo "Get pods ...."
           kubectl get pods -A
           
-          echo "Check argocd cm config ..."
-          kubectl get cm/argocd-cm -n argocd -oyaml
-          kubectl get cm/argocd-cmd-params-cm -n argocd -oyaml
-          kubectl get cm/argocd-rbac-cm -n argocd -oyaml
+          # echo "Check argocd cm config ..."
+          # kubectl get cm/argocd-cm -n argocd -oyaml
+          # kubectl get cm/argocd-cmd-params-cm -n argocd -oyaml
+          # kubectl get cm/argocd-rbac-cm -n argocd -oyaml
           
           echo "Get Tekton ..."
           kubectl get pipeline -A
@@ -339,11 +338,14 @@ jobs:
           kubectl get tasks -A
           kubectl get taskruns -A
           
+          echo "List Argo Application ..."
+          argocd app list
+          
           echo "list the Argocd projects ..."
           kubectl get appprojects -A
           
           echo "list the Argocd applications: parent and children ..."
-          argocd app list -p my-quarkus-app -N argocd
+          argocd app list -p ${REPO_NAME} -N argocd
           argocd app list -p default -N ${KUBE_NAMESPACE}
           
           echo "Detail the applications and projects ..."
