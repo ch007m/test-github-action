@@ -295,6 +295,23 @@ jobs:
             --compressed \
            | jq -r
 
+      - name: Wait till the status of the Application parent is healthy
+        run: |
+          while true; do
+            if kubectl get application/$REPO_NAME-bootstrap -n $KUBE_NAMESPACE --ignore-not-found > /dev/null 2>&1; then
+              STATUS=$(kubectl get application/$REPO_NAME-bootstrap -n $KUBE_NAMESPACE -ojson | jq -r '.status.health.status')
+              if [ "$STATUS" == "Healthy" ]; then
+                echo "Status is Healthy."
+                break
+              else
+                echo "Current status of is $STATUS. Waiting..."
+                sleep 20
+              fi
+            else
+              echo "Resource $APPLICATION does not exist yet. Waiting..."
+            fi
+          done
+
       - name: Watch tekton resources ...
         run: |
           get_pipelineruns_length() {
