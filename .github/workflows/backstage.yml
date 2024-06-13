@@ -237,7 +237,7 @@ jobs:
             gh repo delete $REPO_ORG/$REPO_NAME --yes
           fi
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.BACKSTAGE_GITHUB_TOKEN }}
 
       - name : Scaffold a project
         run: |
