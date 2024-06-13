@@ -1,0 +1,32 @@
+name: Generate-creds
+
+on:
+  workflow_dispatch:
+
+env:
+  # The git repo name is also the name of the project's parameter of the template
+  REPO_NAME: my-quarkus-app-job
+  REPO_ORG: ch007m
+  QUAY_ORG: ch007m
+
+jobs:
+  setup-idp:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create the secret containing the creds to write an image on Quay
+        run: |
+          QUAY_CREDS=$(echo -n "${{ secrets.QUAY_USERNAME }}:${{ secrets.QUAY_ROBOT_TOKEN }}" | base64)
+          
+          cat <<EOF > config.json
+          {
+            "auths": {
+              "quay.io/${QUAY_ORG}": {
+                "auth": "$QUAY_CREDS"
+              }
+            }
+          }
+          EOF
+          cat config.json

@@ -313,7 +313,7 @@ jobs:
               echo "### List Applications children ###"
               argocd app list -p default -N ${KUBE_NAMESPACE}
           
-              sleep 20
+              sleep 30
             fi
           done
 
