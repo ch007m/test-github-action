@@ -289,6 +289,7 @@ jobs:
               tkn pipelinerun logs -n ${KUBE_NAMESPACE} $REPO_NAME-build-test-push -f
             else
               echo "Wait till we have pipelineruns ..." 
+              argocd app get argocd/${REPO_NAME}-bootstrap
               sleep 20
             fi
           done
