@@ -109,10 +109,10 @@ jobs:
       - name: Create ssh key, secret and VM
         run: |
           ssh-keygen -N "" -f id_rsa
-          kubectl create secret generic quarkus-dev-ssh-key -n default --from-file=key=id_rsa.pub
+          kubectl create secret generic quarkus-dev-ssh-key -n ${KUBE_NAMESPACE} --from-file=key=id_rsa.pub
       
-          kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/quarkus-dev-vm.yml
-          kubectl wait --for=condition=Ready vm/quarkus-dev --timeout=360s
+          kubectl apply -f https://raw.githubusercontent.com/ch007m/test-github-action/main/.github/resources/quarkus-dev-vm.yml -n ${KUBE_NAMESPACE}
+          kubectl wait --for=condition=Ready vm/quarkus-dev -n ${KUBE_NAMESPACE} --timeout=360s
 
       - name: Set idp env variables
         run: |
