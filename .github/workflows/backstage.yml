@@ -234,6 +234,7 @@ jobs:
         run: |
           if gh repo view $REPO_ORG/$REPO_NAME > /dev/null 2>&1; then
             echo "Repository '$REPO_ORG/$REPO_NAME' exists."
+            # TODO: Fix HTTP 403: Must have admin rights to Repository. (https://api.github.c 
             gh repo delete $REPO_ORG/$REPO_NAME --yes
           fi
         env:
