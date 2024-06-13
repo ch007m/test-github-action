@@ -282,7 +282,7 @@ jobs:
           }
                  
           echo "Pipelineruns starting ..."
-          for i in `seq 10`; do
+          for i in `seq 20`; do
             if [[ $(get_pipelineruns_length) -gt 0 ]]; then
               tkn pipelinerun logs -n ${KUBE_NAMESPACE} $REPO_NAME-build-test-push -f
             else
@@ -314,13 +314,15 @@ jobs:
           kubectl get taskruns -A
           
           echo "List Argo Application ..."
-          argocd app list
+          kubectl get applications -A ..."
           
-          echo "list the Argocd projects ..."
+          echo "List the Argocd projects ..."
           kubectl get appprojects -A
           
-          echo "list the Argocd applications: parent and children ..."
+          echo "List the Argocd application: parent ..."
           argocd app list -p ${REPO_NAME} -N argocd
+          
+          echo "List the Argocd applications of the children ..."
           argocd app list -p default -N ${KUBE_NAMESPACE}
           
           echo "Detail the applications and projects ..."
@@ -353,10 +355,10 @@ jobs:
           echo "List Argo Application ..."
           argocd app list
           
-          echo "list the Argocd projects ..."
+          echo "List the Argocd projects ..."
           kubectl get appprojects -A
           
-          echo "list the Argocd applications: parent and children ..."
+          echo "List the Argocd applications: parent and children ..."
           argocd app list -p ${REPO_NAME} -N argocd
           argocd app list -p default -N ${KUBE_NAMESPACE}
           
