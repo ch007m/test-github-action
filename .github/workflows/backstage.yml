@@ -96,9 +96,9 @@ jobs:
           kubectl get StorageProfile
           kubectl patch --type merge -p '{"spec": {"claimPropertySets": [{"accessModes": ["ReadWriteOnce"], "volumeMode": "Filesystem"}]}}' StorageProfile standard
 
-          kubectl create clusterrolebinding pod-kubevirt-viewer --clusterrole=kubevirt.io:view --serviceaccount=default:default
-          kubectl create clusterrolebinding cdi-kubevirt-viewer --clusterrole=cdi.kubevirt.io:view --serviceaccount=default:default
-          kubectl create clusterrolebinding quarkus-dev --clusterrole=admin --serviceaccount=default:default
+          kubectl create clusterrolebinding pod-kubevirt-viewer --clusterrole=kubevirt.io:view --serviceaccount=${KUBE_NAMESPACE}:default
+          kubectl create clusterrolebinding cdi-kubevirt-viewer --clusterrole=cdi.kubevirt.io:view --serviceaccount=${KUBE_NAMESPACE}:default
+          kubectl create clusterrolebinding quarkus-dev --clusterrole=admin --serviceaccount=${KUBE_NAMESPACE}:default
 
       - name: Install our Fedora podman image
         run: |
