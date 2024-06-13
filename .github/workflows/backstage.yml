@@ -65,6 +65,7 @@ jobs:
       - name: Create the namespace where applications, resources should be deployed
         run: |
           kubectl create ns ${KUBE_NAMESPACE}
+          kubectl create sa -n ${KUBE_NAMESPACE}
 
       - name: Install Kubevirt
         run: |
