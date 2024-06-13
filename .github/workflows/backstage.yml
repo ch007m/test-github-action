@@ -340,33 +340,31 @@ jobs:
 
       - name: Wait till the application is running and log it
         run: |
-          if kubectl get deployment ${REPO_NAME} -n ${KUBE_NAMESPACE} --ignore-not-found > /dev/null 2>&1; then
-            kubectl wait deployment ${REPO_NAME} -n ${KUBE_NAMESPACE} --for condition=Available=True --timeout=360s
-            kubectl logs -n ${KUBE_NAMESPACE} -lapp.kubernetes.io/name=${REPO_NAME}
-          else
-            echo "Quarkus application deployment do not exist !!"
-            echo "### Let's try to see what happened ...."
+          while true; do  
+            if kubectl get deployment ${REPO_NAME} -n ${KUBE_NAMESPACE} --ignore-not-found > /dev/null 2>&1; then
+              kubectl wait deployment ${REPO_NAME} -n ${KUBE_NAMESPACE} --for condition=Available=True --timeout=360s
+              kubectl logs -n ${KUBE_NAMESPACE} -lapp.kubernetes.io/name=${REPO_NAME}
+              break
+            else
+              echo "Quarkus application deployment do not exist yet"
+              
+              echo "### Let's try to see what is running ...."
+              echo "Get pods ..."
+              kubectl get pods -n ${KUBE_NAMESPCA}
           
-            echo "Get pods ..."
-            kubectl get pods -A
-          
-            echo "List Argo Application ..."
-            kubectl get applications -A
-            
-            echo "List the Argocd projects ..."
-            kubectl get appprojects -A
-            
-            echo "List the Argocd application: parent ..."
-            argocd app list -p ${REPO_NAME} -N argocd
-            
-            echo "List the Argocd applications of the children ..."
-            argocd app list -p default -N ${KUBE_NAMESPACE}
-            
-            echo "Detail the applications and projects ..."
-            kubectl get appprojects -A -oyaml
-            kubectl describe applications -n ${KUBE_NAMESPACE}
-          fi
-
+              #echo "List Argo Application ..."
+              #kubectl get applications -A
+              #echo "List the Argocd projects ..."
+              #kubectl get appprojects -A
+              #echo "List the Argocd application: parent ..."
+              #argocd app list -p ${REPO_NAME} -N argocd
+              #echo "List the Argocd applications of the children ..."
+              #argocd app list -p default -N ${KUBE_NAMESPACE}
+              #echo "Detail the applications and projects ..."
+              #kubectl get appprojects -A -oyaml
+              #kubectl describe applications -n ${KUBE_NAMESPACE}
+            fi
+          done
       - name: Grab data
         run: |
           echo "Get pods ..."
