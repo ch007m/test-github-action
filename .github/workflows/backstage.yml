@@ -288,8 +288,13 @@ jobs:
             if [[ $(get_pipelineruns_length) -gt 0 ]]; then
               tkn pipelinerun logs -n ${KUBE_NAMESPACE} $REPO_NAME-build-test-push -f
             else
-              echo "Wait till we have pipelineruns ..." 
+              echo "Wait till the pipelineruns is running ..." 
+              echo "### Application detail ###" 
               argocd app get argocd/${REPO_NAME}-bootstrap
+          
+              echo "### List Applications children ###"
+              argocd app list -p default -N ${KUBE_NAMESPACE}
+          
               sleep 20
             fi
           done
