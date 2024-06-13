@@ -65,7 +65,6 @@ jobs:
       - name: Create the namespace where applications, resources should be deployed
         run: |
           kubectl create ns ${KUBE_NAMESPACE}
-          kubectl create sa default -n ${KUBE_NAMESPACE}
 
       - name: Create the secret containing the creds to write an image on Quay
         run: |
