@@ -317,6 +317,11 @@ jobs:
             fi
           done
 
+      - name: Wait till the application is running and log it
+        run: |
+          kubectl wait deployment ${REPO_NAME} -n ${KUBE_NAMESPACE} --for condition=Available=True --timeout=360s
+          kubectl logs -n ${KUBE_NAMESPACE} -lapp.kubernetes.io/name=${REPO_NAME}
+
       - name: Grab data
         run: |
           echo "Get pods ..."
