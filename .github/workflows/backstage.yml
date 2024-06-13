@@ -320,7 +320,7 @@ jobs:
           kubectl get appprojects -A -oyaml
           kubectl describe applications -A
           
-          echo "Get pods ..."
+          echo "Get pods ...."
           kubectl get pods -A
           
           echo "Get Tekton ..."
