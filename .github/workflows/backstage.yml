@@ -120,7 +120,7 @@ jobs:
           kubectl create clusterrolebinding quarkus-dev --clusterrole=admin --serviceaccount=${KUBE_NAMESPACE}:default
           
           # Give RBAC to the SA argocd-server of the namespace argocd to access Applications running in another namespaces
-          kubectl create clusterrolebinding argocd-server-admin --clusterrole=admin --serviceaccount=argocd:argocd-server
+          kubectl create clusterrolebinding argocd-server-applications --clusterrole=argocd-applicationset-controller --serviceaccount=argocd:argocd-server
 
       - name: Install our Fedora podman image
         run: |
