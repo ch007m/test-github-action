@@ -67,6 +67,21 @@ jobs:
           kubectl create ns ${KUBE_NAMESPACE}
           kubectl create sa default -n ${KUBE_NAMESPACE}
 
+      - name: Create the secret containing the creds to write an image on Quay
+        run: |
+          QUAY_CREDS=$(echo -n "${{ secrets.QUAY_USERNAME }}:${{ secrets.QUAY_ROBOT_TOKEN }}" | base64)
+          
+          cat <<EOF > config.json
+          {
+            "auths": {
+              "quay.io/${QUAY_ORG}": {
+                "auth": "$QUAY_CREDS"
+              }
+            }
+          }
+          EOF
+          kubectl create secret generic dockerconfig-secret -n dummy --from-file=config.json
+
       - name: Install Kubevirt
         run: |
           function is_nested_virt_enabled() {
