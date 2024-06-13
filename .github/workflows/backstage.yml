@@ -334,6 +334,9 @@ jobs:
               sleep 30
             fi
           done
+          
+          echo "Get pods ..."
+          kubectl get pods -A
 
       - name: Wait till the application is running and log it
         run: |
