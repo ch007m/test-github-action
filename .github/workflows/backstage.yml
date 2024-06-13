@@ -231,15 +231,18 @@ jobs:
             --compressed \
            | jq -r
 
-      - name: Create ${KUBE_NAMESPACE} namespace where resources should be created/deployed
+      - name: Create the namespace where applications, resources should be deployed
         run: |
-           kubectl create ns ${KUBE_NAMESPACE}
+          kubectl create ns ${KUBE_NAMESPACE}
+          
+          echo "Rollout Argocd to take into consideration the new namespace created ..."
+          kubectl rollout restart -n argocd deployment argocd-server
+          kubectl rollout restart -n argocd statefulset argocd-application-controller
 
       - name: Delete application repository
         run: |
           if gh repo view $REPO_ORG/$REPO_NAME > /dev/null 2>&1; then
             echo "Repository '$REPO_ORG/$REPO_NAME' exists."
-            # TODO: Fix HTTP 403: Must have admin rights to Repository. (https://api.github.c 
             gh repo delete $REPO_ORG/$REPO_NAME --yes
           fi
         env:
@@ -308,9 +311,10 @@ jobs:
           kubectl get tasks -A
           kubectl get taskruns -A
           
-          echo "list the projects, applications ..."
+          echo "list the Argocd projects ..."
           kubectl get appprojects -A
           
+          echo "list the Argocd applications: parent and children ..."
           argocd app list -p my-quarkus-app -N argocd
           argocd app list -p default -N ${KUBE_NAMESPACE}
           
@@ -335,9 +339,10 @@ jobs:
           kubectl get tasks -A
           kubectl get taskruns -A
           
-          echo "list the projects, applications ..."
+          echo "list the Argocd projects ..."
           kubectl get appprojects -A
           
+          echo "list the Argocd applications: parent and children ..."
           argocd app list -p my-quarkus-app -N argocd
           argocd app list -p default -N ${KUBE_NAMESPACE}
           
