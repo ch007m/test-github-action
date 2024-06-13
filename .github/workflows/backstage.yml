@@ -350,7 +350,7 @@ jobs:
               
               echo "### Let's try to see what is running ...."
               echo "Get pods ..."
-              kubectl get pods -n ${KUBE_NAMESPCA}
+              kubectl get pods -n ${KUBE_NAMESPACE}
           
               #echo "List Argo Application ..."
               #kubectl get applications -A
