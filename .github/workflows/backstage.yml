@@ -280,14 +280,14 @@ jobs:
           get_pipelineruns_length() {
             tkn pipelinerun list -n ${KUBE_NAMESPACE} -o json | jq -r '.items | length'
           }
-                    
+                 
           echo "Pipelineruns starting ..."
           for i in `seq 10`; do
             if [[ $(get_pipelineruns_length) -gt 0 ]]; then
               tkn pipelinerun logs -n ${KUBE_NAMESPACE} $REPO_NAME-build-test-push -f
             else
               echo "Wait till we have pipelineruns ..." 
-              sleep 20
+              sleep 30
             fi
           done
 
