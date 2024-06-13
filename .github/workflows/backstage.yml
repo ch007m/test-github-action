@@ -68,7 +68,7 @@ jobs:
 
       - name: Create the secret containing the creds to write an image on Quay
         run: |
-          QUAY_CREDS=$(echo -n "${{ secrets.QUAY_USERNAME }}:${{ secrets.QUAY_ROBOT_TOKEN }}" | base64)
+          QUAY_CREDS=$(echo -n "${{ secrets.QUAY_USERNAME }}:${{ secrets.QUAY_ROBOT_TOKEN }}" | base64 -w 0)
           
           cat <<EOF > config.json
           {
