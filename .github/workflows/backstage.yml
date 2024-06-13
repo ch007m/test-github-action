@@ -305,11 +305,12 @@ jobs:
                 break
               else
                 echo "Current status of is $STATUS. Waiting..."
-                sleep 20
               fi
             else
               echo "Resource $APPLICATION does not exist yet. Waiting..."
             fi
+            sleep 20
+            kubectl get application -A
           done
 
       - name: Watch tekton resources ...
