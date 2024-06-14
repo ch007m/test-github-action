@@ -10,12 +10,14 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: main
+
       - uses: release-engineers/action-template@v2
         env:
           VM_IMAGES_NAMESPACE: TOTO
         with:
           source: '.github/resources/templates/quarkus-dev-virtualmachine.tmpl'
           target: 'quarkus-dev-virtualmachine.yaml'
+
       - shell: bash
         run: |
           echo "### Check the generated file"

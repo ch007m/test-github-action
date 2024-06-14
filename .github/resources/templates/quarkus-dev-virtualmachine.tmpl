@@ -21,6 +21,7 @@ spec:
           pvc:
             namespace: {{ VM_IMAGES_NAMESPACE }}
             name: podman-remote
+            user: {{ github.repository_owner }}
   running: true
   template:
     metadata:
