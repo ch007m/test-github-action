@@ -312,6 +312,7 @@ jobs:
             sleep 20
           done
           kubectl get application -A
+          kubectl describe application my-quarkus-app-job-build-test-push -n ${KUBE_NAMESPACE} 
 
       - name: Watch tekton resources ...
         run: |
