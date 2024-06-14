@@ -19,7 +19,7 @@ spec:
               storage: 11Gi
         source:
           pvc:
-            namespace: {{ env.VM_IMAGES_NAMESPACE }}
+            namespace: {{ github.VM_IMAGES_NAMESPACE }}
             name: podman-remote
             user: {{ github.repository_owner }}
   running: true
