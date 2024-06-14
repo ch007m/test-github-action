@@ -418,40 +418,48 @@ jobs:
           kubectl get appprojects -A -oyaml
           kubectl describe applications -n ${KUBE_NAMESPACE}
 
-      - name: Execute if the job was cancelled
-        if: ${{ cancelled() }}
+      - name: Execute if the job fails
+        if: ${{ failure() }}
         run: |
+          echo "#########################################"
           echo "Get pods ...."
+          echo "#########################################"
           kubectl get pods -A
           
-          # echo "Check argocd cm config ..."
-          # kubectl get cm/argocd-cm -n argocd -oyaml
-          # kubectl get cm/argocd-cmd-params-cm -n argocd -oyaml
-          # kubectl get cm/argocd-rbac-cm -n argocd -oyaml
-          
+          echo "#########################################"
           echo "Get Tekton pipeline ..."
-          kubectl get pipeline -A
-          
+          echo "#########################################"
+          kubectl get pipeline -A --ignore-not-found
+
+          echo "#########################################"  
           echo "Get Tekton pipelineruns ..."
-          kubectl get pipelineruns -A
-          
-          echo "Get Tekton Tasks ..."
-          kubectl get tasks -A
-          
+          echo "#########################################"
+          kubectl get pipelineruns -A --ignore-not-found
+
+          echo "#########################################"          
           echo "Get Tekton taskruns ..."
-          kubectl get taskruns -A
+          echo "#########################################"
+          kubectl get taskruns -A --ignore-not-found
           
+          echo "#########################################"
           echo "List Argo Application ..."
+          echo "#########################################"
           argocd app list
           
+          echo "#########################################"
           echo "List the Argocd projects ..."
+          echo "#########################################"
           kubectl get appprojects -A
           
+          echo "#########################################"
           echo "List the Argocd applications: parent and children ..."
+          echo "#########################################"
           argocd app list -p ${REPO_NAME} -N argocd
           argocd app list -p default -N ${KUBE_NAMESPACE}
           
+          echo "#########################################"
           echo "Detail the applications and projects ..."
+          echo "#########################################"
           kubectl get appprojects -A -oyaml
           kubectl describe applications -n ${KUBE_NAMESPACE}
           
