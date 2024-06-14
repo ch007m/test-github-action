@@ -317,7 +317,7 @@ jobs:
           #    echo "######### Resource $APPLICATION does not exist yet. Waiting... "
           #  fi
           #  sleep 20
-          done
+          #done
 
           echo "#########################################"          
           echo "Detail Application(s) information"
