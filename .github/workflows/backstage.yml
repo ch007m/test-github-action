@@ -313,7 +313,21 @@ jobs:
           echo "#########################################"
           kubectl get application -A
           
-          # TODO: Add a condition (or something else here) to check if the argocd client can access the Application to avoid "permission denied error"
+          if ! $SCRIPTS/waitFor.sh application $REPO_NAME-build-test-push ${KUBE_NAMESPACE} Synced ; then
+            echo "Failed to get: application $REPO_NAME-build-test-push synced"
+            exit 1;
+          fi
+          
+          if ! $SCRIPTS/waitFor.sh application $REPO_NAME-db ${KUBE_NAMESPACE} Synced ; then
+            echo "Failed to get: application $REPO_NAME-db synced"
+            exit 1;
+          fi
+          
+          if ! $SCRIPTS/waitFor.sh application $REPO_NAME-deploy ${KUBE_NAMESPACE} Synced ; then
+            echo "Failed to get: application $REPO_NAME-deploy synced"
+            exit 1;
+          fi
+          
           echo "#########################################"
           argocd app get ${KUBE_NAMESPACE}/${REPO_NAME}-build-test-push
           echo "#########################################"
@@ -342,33 +356,15 @@ jobs:
               sleep 30
             fi
           done
-          
-          echo "Get pods ..."
-          kubectl get pods -A
 
       - name: Wait till the application is running and log it
         run: |
-          while true; do  
-            if kubectl get deployment ${REPO_NAME} -n ${KUBE_NAMESPACE} > /dev/null 2>&1; then
-              kubectl wait deployment ${REPO_NAME} -n ${KUBE_NAMESPACE} --for condition=Available=True --timeout=360s
-              kubectl logs -n ${KUBE_NAMESPACE} -lapp.kubernetes.io/name=${REPO_NAME}
-              break
-            else
-              echo "Quarkus application deployment do not exist yet"
-              
-              echo "### Let's try to see what is running ...."
-              
-              echo "#########################################"
-              kubectl get deployment -n ${KUBE_NAMESPACE}
-              
-              echo "#########################################"
-              argocd app get ${KUBE_NAMESPACE}/${REPO_NAME}-deploy
-              echo "#########################################"
-              argocd app get ${KUBE_NAMESPACE}/${REPO_NAME}-db
-          
-              sleep 20
-            fi
-          done
+          SCRIPTS=$(pwd)/.github/scripts
+
+          if ! $SCRIPTS/waitFor.sh deployment $REPO_NAME -n ${KUBE_NAMESPACE} READY; then
+            echo "Failed to get deployment of $REPO_NAME"
+            exit 1;
+          fi
 
       - name: Execute if the job fails
         if: ${{ failure() }}
