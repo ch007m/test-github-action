@@ -325,7 +325,7 @@ jobs:
               tkn pipelinerun logs -n ${KUBE_NAMESPACE} $REPO_NAME-build-test-push -f
             else
               echo "Wait till the pipelineruns is running ..." 
-              kubectl get po --all -n ${KUBE_NAMESPACE}
+              kubectl get pods -n ${KUBE_NAMESPACE}
               
               #echo "### Application detail ###" 
               #argocd app get argocd/${REPO_NAME}-bootstrap
