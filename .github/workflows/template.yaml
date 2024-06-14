@@ -24,7 +24,6 @@ jobs:
 
       - name: Get result
         run: |-
-            # echo '${{ steps.render_template.outputs.result }}' > quarkus-dev-virtualmachine.yaml
             cat quarkus-dev-virtualmachine.yaml
 
       #- uses: release-engineers/action-template@v2
