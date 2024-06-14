@@ -7,9 +7,9 @@ jobs:
   templating:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
-          ref: master
+          ref: main
       - uses: release-engineers/action-template@v2
         env:
           VM_IMAGES_NAMESPACE: TOTO
