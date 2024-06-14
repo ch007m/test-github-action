@@ -18,12 +18,13 @@ jobs:
          VM_IMAGES_NAMESPACE: TOTO
         with:
           template: .github/resources/templates/quarkus-dev-virtualmachine.tmpl
+          result_path: quarkus-dev-virtualmachine.yaml
           vars: |
             vmImagesNamespace: ${{ env.VM_IMAGES_NAMESPACE }}
 
       - name: Get result
         run: |-
-            echo '${{ steps.render_template.outputs.result }}' > quarkus-dev-virtualmachine.yaml
+            # echo '${{ steps.render_template.outputs.result }}' > quarkus-dev-virtualmachine.yaml
             cat quarkus-dev-virtualmachine.yaml
 
       #- uses: release-engineers/action-template@v2
