@@ -359,8 +359,14 @@ jobs:
               echo "Quarkus application deployment do not exist yet"
               
               echo "### Let's try to see what is running ...."
+              
               echo "#########################################"
               kubectl get deployment -n ${KUBE_NAMESPACE}
+              
+              echo "#########################################"
+              argocd app get ${KUBE_NAMESPACE}/${REPO_NAME}-deploy
+              echo "#########################################"
+              argocd app get ${KUBE_NAMESPACE}/${REPO_NAME}-db
           
               sleep 20
             fi
