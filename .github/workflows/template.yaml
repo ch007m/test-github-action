@@ -11,14 +11,27 @@ jobs:
         with:
           ref: main
 
-      - uses: release-engineers/action-template@v2
+      - name: Render template
+        id: render_template
+        uses: chuhlomin/render-template@v1
         env:
-          VM_IMAGES_NAMESPACE: TOTO
+         VM_IMAGES_NAMESPACE: TOTO
         with:
-          source: '.github/resources/templates/quarkus-dev-virtualmachine.tmpl'
-          target: 'quarkus-dev-virtualmachine.yaml'
+          template: .github/resources/templates/quarkus-dev-virtualmachine.tmpl
+          vars: |
+            vmImagesNamespace: ${{ env.VM_IMAGES_NAMESPACE }}
 
-      - shell: bash
-        run: |
-          echo "### Check the generated file"
-          cat quarkus-dev-virtualmachine.yaml
+      - name: Deploy
+        run: |-
+            echo '${{ steps.render_template.outputs.result }}'
+      #- uses: release-engineers/action-template@v2
+      #  env:
+      #    VM_IMAGES_NAMESPACE: TOTO
+      #  with:
+      #    source: '.github/resources/templates/quarkus-dev-virtualmachine.tmpl'
+      #    target: 'quarkus-dev-virtualmachine.yaml'
+
+      #- shell: bash
+      #  run: |
+      #    echo "### Check the generated file"
+      #    cat quarkus-dev-virtualmachine.yaml

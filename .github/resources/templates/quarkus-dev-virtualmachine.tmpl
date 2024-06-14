@@ -19,9 +19,8 @@ spec:
               storage: 11Gi
         source:
           pvc:
-            namespace: {{ VM_IMAGES_NAMESPACE }}
+            namespace: {{ .vmImagesNamespace }}
             name: podman-remote
-            user: {{ github.repository_owner }}
   running: true
   template:
     metadata:
