@@ -1,0 +1,22 @@
+name: Template
+
+on:
+  workflow_dispatch:
+
+jobs:
+  templating:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: master
+      - uses: release-engineers/action-template@v2
+        env:
+          VM_IMAGES_NAMESPACE: TOTO
+        with:
+          source: '.github/resources/templates/quarkus-dev-virtualmachine.tmpl'
+          target: 'quarkus-dev-virtualmachine.yaml'
+      - shell: bash
+        run: |
+          echo "### Check the generated file"
+          cat quarkus-dev-virtualmachine.yaml
