@@ -380,43 +380,6 @@ jobs:
               sleep 20
             fi
           done
-      - name: Grab data
-        run: |
-          echo "Get pods ..."
-          kubectl get pods -A
-          
-          # echo "Check argocd cm config ..."
-          # kubectl get cm/argocd-cm -n argocd -oyaml
-          # kubectl get cm/argocd-cmd-params-cm -n argocd -oyaml
-          # kubectl get cm/argocd-rbac-cm -n argocd -oyaml
-          
-          echo "Get Tekton pipeline ..."
-          kubectl get pipeline -A
-          
-          echo "Get Tekton pipelineruns ..."
-          kubectl get pipelineruns -A
-          
-          echo "Get Tekton Tasks ..."
-          kubectl get tasks -A
-          
-          echo "Get Tekton taskruns ..."
-          kubectl get taskruns -A
-          
-          echo "List Argo Application ..."
-          kubectl get applications -A
-          
-          echo "List the Argocd projects ..."
-          kubectl get appprojects -A
-          
-          echo "List the Argocd application: parent ..."
-          argocd app list -p ${REPO_NAME} -N argocd
-          
-          echo "List the Argocd applications of the children ..."
-          argocd app list -p default -N ${KUBE_NAMESPACE}
-          
-          echo "Detail the applications and projects ..."
-          kubectl get appprojects -A -oyaml
-          kubectl describe applications -n ${KUBE_NAMESPACE}
 
       - name: Execute if the job fails
         if: ${{ failure() }}
