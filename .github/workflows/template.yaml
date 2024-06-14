@@ -21,9 +21,11 @@ jobs:
           vars: |
             vmImagesNamespace: ${{ env.VM_IMAGES_NAMESPACE }}
 
-      - name: Deploy
+      - name: Get result
         run: |-
-            echo '${{ steps.render_template.outputs.result }}'
+            echo '${{ steps.render_template.outputs.result }}' > quarkus-dev-virtualmachine.yaml
+            cat quarkus-dev-virtualmachine.yaml
+
       #- uses: release-engineers/action-template@v2
       #  env:
       #    VM_IMAGES_NAMESPACE: TOTO
