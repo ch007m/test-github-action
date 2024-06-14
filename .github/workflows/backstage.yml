@@ -299,7 +299,7 @@ jobs:
         run: |
           SCRIPTS=$(pwd)/.github/scripts
 
-          if ! /waitFor.sh application $REPO_NAME-bootstrap argocd Healthy; then
+          if ! $SCRIPTS/waitFor.sh application $REPO_NAME-bootstrap argocd Healthy; then
             echo "Failed to watch: application $REPO_NAME-bootstrap"
             exit 1;
           fi
