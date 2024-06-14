@@ -27,7 +27,7 @@ data:
     - kinds:
         - Route
       apiGroups:
-        - "*"    
+        - "route.openshift.io"    
 
   resource.customizations.health.PersistentVolumeClaim: |
     hs = {}
