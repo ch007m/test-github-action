@@ -297,7 +297,12 @@ jobs:
 
       - name: Wait till the status of the Application parent is healthy
         run: |
-          .github/scripts/waitFor.sh application $REPO_NAME-bootstrap argocd Healthy
+          SCRIPTS=$(pwd)/.github/scripts
+
+          if ! /waitFor.sh application $REPO_NAME-bootstrap argocd Healthy; then
+            echo "Failed to watch: application $REPO_NAME-bootstrap"
+            exit 1;
+          fi
           
           #while true; do
           #    if kubectl get application $REPO_NAME-bootstrap -n argocd > /dev/null 2>&1; then
