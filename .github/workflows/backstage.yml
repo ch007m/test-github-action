@@ -314,17 +314,20 @@ jobs:
           kubectl get application -A
           
           if ! $SCRIPTS/waitFor.sh application $REPO_NAME-build-test-push ${KUBE_NAMESPACE} Synced ; then
-            echo "Failed to get: application $REPO_NAME-build-test-push synced"
+            echo "Failed to get: application $REPO_NAME-build-test-push Synced"
+            kubectl describe application $REPO_NAME-build-test-push
             exit 1;
           fi
           
           if ! $SCRIPTS/waitFor.sh application $REPO_NAME-db ${KUBE_NAMESPACE} Synced ; then
-            echo "Failed to get: application $REPO_NAME-db synced"
+            echo "Failed to get: application $REPO_NAME-db Synced"
+            kubectl describe application $REPO_NAME-db
             exit 1;
           fi
           
           if ! $SCRIPTS/waitFor.sh application $REPO_NAME-deploy ${KUBE_NAMESPACE} Synced ; then
-            echo "Failed to get: application $REPO_NAME-deploy synced"
+            echo "Failed to get: application $REPO_NAME-deploy Synced"
+            kubectl describe application $REPO_NAME-deploy
             exit 1;
           fi
           
