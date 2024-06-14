@@ -304,14 +304,14 @@ jobs:
                 echo "Status is Healthy."
                 break
               else
-                echo "Current status of is $STATUS. Waiting..."
+                echo "Current status of the bootstrap application is $STATUS. Waiting..."
               fi
             else
               echo "Resource $APPLICATION does not exist yet. Waiting..."
             fi
             sleep 20
-            kubectl get application -A
           done
+          kubectl get application -A
 
       - name: Watch tekton resources ...
         run: |
