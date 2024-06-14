@@ -364,6 +364,8 @@ jobs:
           if ! $SCRIPTS/waitFor.sh deployment $REPO_NAME -n ${KUBE_NAMESPACE} READY; then
             echo "Failed to get deployment of $REPO_NAME"
             exit 1;
+          else
+            kubectl logs -n ${KUBE_NAMESPACE} -lapp.kubernetes.io/name=${REPO_NAME}
           fi
 
       - name: Execute if the job fails
