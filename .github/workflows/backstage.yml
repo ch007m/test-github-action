@@ -301,17 +301,18 @@ jobs:
               if kubectl get application $REPO_NAME-bootstrap -n argocd > /dev/null 2>&1; then
               STATUS=$(kubectl get application/$REPO_NAME-bootstrap -n argocd -ojson | jq -r '.status.health.status')
               if [ "$STATUS" == "Healthy" ]; then
-                echo "Status is Healthy."
+                echo "######### Status is Healthy. "
                 break
               else
-                echo "Current status of the bootstrap application is $STATUS. Waiting..."
+                echo "######### Current status of the bootstrap application is $STATUS. Waiting... "
               fi
             else
-              echo "Resource $APPLICATION does not exist yet. Waiting..."
+              echo "######### Resource $APPLICATION does not exist yet. Waiting... "
             fi
             sleep 20
           done
-          
+
+          echo "#########################################"          
           echo "Detail Application(s) information"
           echo "#########################################"
           kubectl get application -A
@@ -328,12 +329,16 @@ jobs:
             tkn pipelinerun list -n ${KUBE_NAMESPACE} -o json | jq -r '.items | length'
           }
                  
+          echo "#########################################"
           echo "Pipelineruns starting ..."
+          echo "#########################################"
           for i in `seq 30`; do
             if [[ $(get_pipelineruns_length) -gt 0 ]]; then
               tkn pipelinerun logs -n ${KUBE_NAMESPACE} $REPO_NAME-build-test-push -f
             else
-              echo "Wait till the pipelineruns is running ..." 
+              echo "#########################################"
+              echo "Wait till the pipelineruns is running ..."
+              echo "#########################################"
               kubectl get pods -n ${KUBE_NAMESPACE}
           
               sleep 30
@@ -345,8 +350,6 @@ jobs:
 
       - name: Wait till the application is running and log it
         run: |
-          echo "#########################################"
-          kubectl get deployment -n ${KUBE_NAMESPACE}
           while true; do  
             if kubectl get deployment ${REPO_NAME} -n ${KUBE_NAMESPACE} > /dev/null 2>&1; then
               kubectl wait deployment ${REPO_NAME} -n ${KUBE_NAMESPACE} --for condition=Available=True --timeout=360s
@@ -357,7 +360,9 @@ jobs:
               
               echo "### Let's try to see what is running ...."
               echo "#########################################"
-              kubectl get pods -n ${KUBE_NAMESPACE}
+              kubectl get deployment -n ${KUBE_NAMESPACE}
+          
+              sleep 20
             fi
           done
       - name: Grab data
