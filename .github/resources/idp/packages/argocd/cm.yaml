@@ -24,6 +24,11 @@ data:
         - ProviderConfigUsage
       apiGroups:
         - "*"
+    - kinds:
+        - Route
+      apiGroups:
+        - "*"    
+
   resource.customizations.health.PersistentVolumeClaim: |
     hs = {}
     if obj.status ~= nil then

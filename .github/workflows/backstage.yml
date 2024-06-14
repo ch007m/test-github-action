@@ -316,6 +316,8 @@ jobs:
           echo "Detail Application(s) information"
           echo "#########################################"
           kubectl get application -A
+          
+          # TODO: Add a condition (or something else here) to check if the argocd client can access the Application to avoid "permission denied error"
           echo "#########################################"
           argocd app get ${KUBE_NAMESPACE}/${REPO_NAME}-build-test-push
           echo "#########################################"
