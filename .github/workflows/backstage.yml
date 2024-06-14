@@ -298,7 +298,7 @@ jobs:
       - name: Wait till the status of the Application parent is healthy
         run: |
           while true; do
-              if kubectl get application $REPO_NAME-bootstrap -n argocd --ignore-not-found > /dev/null 2>&1; then
+              if kubectl get application $REPO_NAME-bootstrap -n argocd > /dev/null 2>&1; then
               STATUS=$(kubectl get application/$REPO_NAME-bootstrap -n argocd -ojson | jq -r '.status.health.status')
               if [ "$STATUS" == "Healthy" ]; then
                 echo "Status is Healthy."
@@ -348,7 +348,7 @@ jobs:
           echo "#########################################"
           kubectl get deployment -n ${KUBE_NAMESPACE}
           while true; do  
-            if kubectl get deployment ${REPO_NAME} -n ${KUBE_NAMESPACE} --ignore-not-found > /dev/null 2>&1; then
+            if kubectl get deployment ${REPO_NAME} -n ${KUBE_NAMESPACE} > /dev/null 2>&1; then
               kubectl wait deployment ${REPO_NAME} -n ${KUBE_NAMESPACE} --for condition=Available=True --timeout=360s
               kubectl logs -n ${KUBE_NAMESPACE} -lapp.kubernetes.io/name=${REPO_NAME}
               break
@@ -356,6 +356,7 @@ jobs:
               echo "Quarkus application deployment do not exist yet"
               
               echo "### Let's try to see what is running ...."
+              echo "#########################################"
               kubectl get pods -n ${KUBE_NAMESPACE}
             fi
           done
