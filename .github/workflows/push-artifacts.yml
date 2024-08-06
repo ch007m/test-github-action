@@ -5,24 +5,20 @@ on:
   workflow_dispatch:
 
 jobs:
-
-  archive-build-artifacts:
+  build:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Step 1 - Create a temporary artifact downloads folder
-        run: mkdir downloads
+      - name: Build
+        run: echo ${{ github.sha }} > Release.txt
 
-      - name: step 2 - Add artifacts to publish to the temp folder
-        run: |
-          cd downloads
-          echo 'alpha'    > alpha.html
-          echo 'bravo'    > bravo.html
-          echo 'charlie'  > charlie.html
-          cd ..
+      - name: Test
+        run: cat Release.txt
 
-      - name: Step 3 - Use the Upload Artifact GitHub Action
-        uses: actions/upload-artifact@v2
+      - name: Release
+        uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
         with:
-          name: assets-for-download
-          path: downloads
+          files: Release.txt
