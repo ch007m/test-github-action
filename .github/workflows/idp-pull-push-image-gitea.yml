@@ -61,5 +61,5 @@ jobs:
             $GITEA_REGISTRY
           docker pull alpine
           docker tag alpine:latest $REGISTRY/alpine:latest
-          docker push
+          docker push \
             $REGISTRY/alpine:latest
