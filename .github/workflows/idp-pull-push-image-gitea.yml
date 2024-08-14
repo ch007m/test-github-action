@@ -22,12 +22,6 @@ jobs:
 
           idpbuilder version
 
-      - name: Install tekton client
-        run: |
-          curl -sSL "https://github.com/tektoncd/cli/releases/download/v{$TEKTON_CLIENT_VERSION}/tkn_${TEKTON_CLIENT_VERSION}_Linux_x86_64.tar.gz" -o tkn.tar.gz
-          sudo tar xvzf tkn.tar.gz -C /usr/local/bin/ tkn
-          tkn version
-
       - name: Install podman
         run: |
           sudo apt-get -y install podman
