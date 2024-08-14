@@ -1,4 +1,4 @@
-name: Install IDP and pull/pushto gitea
+name: Install IDP and pull/push to gitea
 
 on:
   workflow_dispatch:
