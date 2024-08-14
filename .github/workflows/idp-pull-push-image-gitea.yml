@@ -55,7 +55,7 @@ jobs:
       - name: Push to gitea using docker
         run: |
           REGISTRY="gitea.cnoe.localtest.me:8443/giteaadmin"
-          docker login
+          docker login \
             -u $GITEA_USERNAME \
             -p $GITEA_PASSWORD \
             $GITEA_REGISTRY
