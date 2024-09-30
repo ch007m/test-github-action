@@ -12,6 +12,7 @@ jobs:
         with: # Uncomment to enable Podman API
           podman_api: true
 
-      - name: |
+      - name: Test podman cli
+        run: |
           echo $DOCKER_HOST
           podman -v
