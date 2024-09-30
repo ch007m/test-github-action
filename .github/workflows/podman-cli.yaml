@@ -14,11 +14,12 @@ jobs:
 
       - name: Test podman cli
         run: |
-          sudo apt -y install podman
+          sudo apt -y install podman socat
           systemctl --user enable --now podman.socket
           
           echo "## DOCKER HOST: "
-          export DOCKER_HOST="unix:///run/user/$(id -u)/podman/podman.sock"
+          #export DOCKER_HOST="unix:///run/user/$(id -u)/podman/podman.sock"
+          socat TCP-LISTEN:2376,reuseaddr,fork,bind=0.0.0.0 unix:///run/user/$(id -u)/podman/podman.sock
           
           echo "## Podman version"
           podman -v
@@ -39,4 +40,5 @@ jobs:
           $USER_BIN_DIR/pack config experimental true
           
           git clone https://github.com/buildpacks/samples
+          export DOCKER_HOST="tcp://0.0.0..0:2376"
           $USER_BIN_DIR/pack build sample-app --path samples/apps/java-maven --builder cnbs/sample-builder:jammy --docker-host inherit -v
