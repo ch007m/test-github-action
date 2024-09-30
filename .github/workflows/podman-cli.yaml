@@ -17,9 +17,11 @@ jobs:
           sudo apt -y install podman socat
           systemctl --user enable --now podman.socket
           
-          echo "## DOCKER HOST: "
+          #echo "## DOCKER HOST: "
           #export DOCKER_HOST="unix:///run/user/$(id -u)/podman/podman.sock"
-          socat TCP-LISTEN:2376,reuseaddr,fork,bind=0.0.0.0 unix:///run/user/$(id -u)/podman/podman.sock
+          
+          echo "## Launching socat..."
+          socat TCP-LISTEN:2376,reuseaddr,fork,bind=0.0.0.0 unix:///run/user/$(id -u)/podman/podman.sock &
           
           echo "## Podman version"
           podman -v
