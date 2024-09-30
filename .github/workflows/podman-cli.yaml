@@ -7,12 +7,14 @@ jobs:
   build-container-image:
     runs-on: ubuntu-latest
     steps:
-      - name: Emulate Docker CLI with Podman
-        uses: k8s-crafts/podman-cli-action@v1
+      #- name: Emulate Docker CLI with Podman
+      #  uses: k8s-crafts/podman-cli-action@v1
         #with:
         #  podman_api: true
 
       - name: Test podman cli
         run: |
+          sudo apt -y install podman-docker
+          systemctl --user enable --now podman.socket
           echo $DOCKER_HOST
           podman -v
