@@ -27,6 +27,9 @@ jobs:
           PACK_CLI_VERSION="v0.35.1"
           TEMP_DIR="./tmp"
           USER_BIN_DIR="./bin"
+          
+          mkdir -p $TEMP_DIR
+          mkdir -p $USER_BIN_DIR
   
           curl -sSL "https://github.com/buildpacks/pack/releases/download/${PACK_CLI_VERSION}/pack-${PACK_CLI_VERSION}-linux.tgz" | tar -C ${TEMP_DIR} --no-same-owner -xzv pack
           mv ${TEMP_DIR}/pack ${USER_BIN_DIR}
