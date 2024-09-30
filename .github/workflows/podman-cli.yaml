@@ -14,7 +14,11 @@ jobs:
 
       - name: Test podman cli
         run: |
+          sudo cat /etc/apt/sources.list
+          sudo echo "deb http://non-us.debian.org/debian-non-US unstable/non-US main contrib non-free" >> /etc/apt/sources.list
+          sudo echo "deb http://ftp.us.debian.org/debian unstable main non-free contrib" >> /etc/apt/sources.list
           sudo apt-get -y -t unstable install podman
+          
           sudo apt-get -y install socat
           systemctl --user enable --now podman.socket
           
