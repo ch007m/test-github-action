@@ -16,5 +16,21 @@ jobs:
         run: |
           sudo apt -y install podman
           systemctl --user enable --now podman.socket
+          
+          echo "## DOCKER HOST: "
           echo $DOCKER_HOST
+          
+          echo "## Podman version"
           podman -v
+          
+          echo "### Install pack ###"
+          PACK_CLI_VERSION="v0.35.1"
+          TEMP_DIR="$HOME/tmp"
+          USER_BIN_DIR="$HOME/bin"
+  
+          curl -sSL "https://github.com/buildpacks/pack/releases/download/${PACK_CLI_VERSION}/pack-${PACK_CLI_VERSION}-linux.tgz" | tar -C ${TEMP_DIR} --no-same-owner -xzv pack
+          mv ${TEMP_DIR}/pack ${USER_BIN_DIR}
+
+          echo "### Pack version ###"
+          pack --version
+          pack config experimental true
