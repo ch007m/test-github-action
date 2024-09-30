@@ -42,5 +42,5 @@ jobs:
           $USER_BIN_DIR/pack config experimental true
           
           git clone https://github.com/buildpacks/samples
-          export DOCKER_HOST="tcp://0.0.0..0:2376"
+          export DOCKER_HOST="tcp://0.0.0.0:2376"
           $USER_BIN_DIR/pack build sample-app --path samples/apps/java-maven --builder cnbs/sample-builder:jammy --docker-host inherit -v
