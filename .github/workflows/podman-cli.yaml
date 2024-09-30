@@ -14,7 +14,8 @@ jobs:
 
       - name: Test podman cli
         run: |
-          sudo apt -y install podman socat
+          sudo apt-get -y -t unstable install podman
+          sudo apt-get -y install socat
           systemctl --user enable --now podman.socket
           
           #echo "## DOCKER HOST: "
