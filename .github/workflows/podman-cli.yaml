@@ -39,4 +39,4 @@ jobs:
           $USER_BIN_DIR/pack config experimental true
           
           git clone https://github.com/buildpacks/samples
-          $USER_BIN_DIR/pack build sample-app --path samples/apps/java-maven --builder cnbs/sample-builder:jammy
+          $USER_BIN_DIR/pack build sample-app --path samples/apps/java-maven --builder cnbs/sample-builder:jammy -v
