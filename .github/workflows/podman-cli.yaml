@@ -15,6 +15,7 @@ jobs:
 
       - name: Test podman cli
         run: |
+          apt-get update
           apt-get -y install podman
           apt-get -y install socat
           
