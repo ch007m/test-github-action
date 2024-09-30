@@ -1,0 +1,17 @@
+name: Build CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-container-image:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Emulate Docker CLI with Podman
+        uses: k8s-crafts/podman-cli-action@v1
+        with: # Uncomment to enable Podman API
+          podman_api: true
+
+      - name: |
+          echo $DOCKER_HOST
+          podman -v
