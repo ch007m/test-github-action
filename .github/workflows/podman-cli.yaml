@@ -15,7 +15,7 @@ jobs:
 
       - name: Test podman cli
         run: |
-          apt-get -y -t unstable install podman
+          apt-get -y install podman
           apt-get -y install socat
           
           systemctl --user enable --now podman.socket
