@@ -6,6 +6,7 @@ on:
 jobs:
   build-container-image:
     runs-on: ubuntu-latest
+    container: debian:sid
     steps:
       #- name: Emulate Docker CLI with Podman
       #  uses: k8s-crafts/podman-cli-action@v1
@@ -14,24 +15,9 @@ jobs:
 
       - name: Test podman cli
         run: |
-          echo "deb http://deb.debian.org/debian unstable main contrib non-free" | sudo tee -a /etc/apt/sources.list  > /dev/null
-          
-          cat <<EOF | sudo tee -a /etc/apt/preferences > /dev/null
-
-
-          Package: *
-          Pin: release a=unstable
-          Pin-Priority: 100
-          EOF
-          
-          sudo cat /etc/apt/sources.list
-          sudo cat /etc/apt/preferences
-          
-          sudo apt update
-
           sudo apt-get -y -t unstable install podman
-          
           sudo apt-get -y install socat
+          
           systemctl --user enable --now podman.socket
           
           #echo "## DOCKER HOST: "
