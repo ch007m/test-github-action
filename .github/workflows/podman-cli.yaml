@@ -1,4 +1,4 @@
-name: Build CI
+name: Podman cli
 
 on:
   workflow_dispatch:
