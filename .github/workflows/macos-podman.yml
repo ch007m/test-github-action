@@ -18,5 +18,6 @@ jobs:
           podman -v
           vfkit -v
           
-          #podman machine init
-          #podman machine start --log-level debug
+          podman machine init
+          
+          podman machine start --log-level debug
