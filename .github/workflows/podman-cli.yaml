@@ -5,8 +5,8 @@ on:
 
 jobs:
   build-container-image:
-    runs-on: ubuntu-latest
-    container: debian:sid
+    runs-on: self-hosted
+    # container: debian:sid
     steps:
       #- name: Emulate Docker CLI with Podman
       #  uses: k8s-crafts/podman-cli-action@v1
