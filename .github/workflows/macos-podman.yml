@@ -15,3 +15,5 @@ jobs:
           podman -v
           
           podman machine init
+          
+          podman machine start
