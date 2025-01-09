@@ -16,4 +16,6 @@ jobs:
           
           podman machine init
           
+          vfkit -v
+          
           podman machine start --log-level debug
