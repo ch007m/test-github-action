@@ -12,4 +12,6 @@ jobs:
       - name: Install podman
         run: |
           brew install podman
-          podman -version
+          podman -v
+          
+          podman machine init
