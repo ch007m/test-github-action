@@ -16,4 +16,4 @@ jobs:
           
           podman machine init
           
-          podman machine start
+          podman machine start --log-level debug
