@@ -12,10 +12,11 @@ jobs:
       - name: Install podman
         run: |
           brew install podman
+          brew tap cfergeau/crc
+          brew install vfkit
+          
           podman -v
-          
-          podman machine init
-          
           vfkit -v
           
-          podman machine start --log-level debug
+          #podman machine init
+          #podman machine start --log-level debug
