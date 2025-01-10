@@ -21,7 +21,6 @@ jobs:
           brew install vfkit
           
           podman -v
-          #/opt/homebrew/Cellar/podman/5.3.1/libexec/podman/vfkit -v
           
           podman machine init
           podman machine start --log-level debug
