@@ -27,3 +27,5 @@ jobs:
           
           podman machine ssh "cat /etc/redhat-release"
           
+          podman run -it -p 8888:8888 nginxdemos/nginx-hello:plain-text          
+          
