@@ -12,12 +12,12 @@ jobs:
       - name: Install podman
         run: |
           brew install podman
-          # not needed as podman is installing it
-          #brew tap cfergeau/crc
-          #brew install vfkit
+          # It is not needed to install vfkit since podman >= 14 as already packaged
+          brew tap cfergeau/crc
+          brew install vfkit
           
           podman -v
-          /opt/homebrew/Cellar/podman/5.3.1/libexec/podman/vfkit -v
+          #/opt/homebrew/Cellar/podman/5.3.1/libexec/podman/vfkit -v
           
           podman machine init
           podman machine start --log-level debug
