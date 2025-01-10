@@ -15,6 +15,7 @@ jobs:
       - name: Install podman
         run: |
           brew install podman
+          
           # It is not needed to install vfkit since podman >= 14 as already packaged
           brew tap cfergeau/crc
           brew install vfkit
@@ -24,3 +25,6 @@ jobs:
           
           podman machine init
           podman machine start --log-level debug
+          
+          podman machine ssh "cat /etc/redhat-release"
+          
