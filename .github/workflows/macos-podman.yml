@@ -16,7 +16,6 @@ jobs:
           #brew tap cfergeau/crc
           #brew install vfkit
           
-          podman info
           podman -v
           /opt/homebrew/Cellar/podman/5.3.1/libexec/podman/vfkit -v
           
