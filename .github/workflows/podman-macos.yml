@@ -8,7 +8,10 @@ on:
 
 jobs:
   ci:
-    runs-on: macos-13
+    runs-on:
+      os: macos-14,
+      platform: macos,
+      arch: x86
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
