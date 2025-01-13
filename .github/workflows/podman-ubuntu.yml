@@ -22,6 +22,7 @@ jobs:
           brew install crun
           brew services start podman
       - name: Display versions    
+        run: |
           podman -v
           crun -v
         
