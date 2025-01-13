@@ -19,6 +19,7 @@ jobs:
       - name: Install podman
         run: |
           brew install podman
+          brew install crun
           podman -v
           crun -v
           brew services start podman
