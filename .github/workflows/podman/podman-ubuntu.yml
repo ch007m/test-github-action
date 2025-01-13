@@ -1,4 +1,4 @@
-name: macos-runner-podman
+name: ubuntu-homebrew-podman
 
 on:
   workflow_dispatch:
