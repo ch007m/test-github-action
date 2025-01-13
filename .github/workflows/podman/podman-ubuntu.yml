@@ -1,0 +1,29 @@
+name: macos-runner-podman
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install podman
+        run: |
+          brew install podman
+          podman -v
+          
+          #podman machine init
+          #podman machine start --log-level debug
+          #
+          #podman machine ssh "cat /etc/redhat-release"
+          #
+          #podman run -it -p 8888:8888 nginxdemos/nginx-hello:plain-text          
+          
