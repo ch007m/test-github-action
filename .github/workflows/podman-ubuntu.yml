@@ -20,9 +20,6 @@ jobs:
         run: |
           brew install podman
           podman -v
-          
-
-          #podman run -it -p 8888:8888 nginxdemos/nginx-hello:plain-text
 
       - name: Run container
         run: |
