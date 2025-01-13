@@ -12,6 +12,7 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
+
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
@@ -20,10 +21,10 @@ jobs:
           brew install podman
           podman -v
           
-          #podman machine init
-          #podman machine start --log-level debug
-          #
-          #podman machine ssh "cat /etc/redhat-release"
-          #
-          #podman run -it -p 8888:8888 nginxdemos/nginx-hello:plain-text          
+
+          #podman run -it -p 8888:8888 nginxdemos/nginx-hello:plain-text
+
+      - name: Run container
+        run: |
+          podman run -it -p 8888:8888 nginxdemos/nginx-hello:plain-text   
           
