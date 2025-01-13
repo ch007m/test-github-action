@@ -16,12 +16,19 @@ jobs:
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
 
-      - name: Install podman
+      - name: Remove old executables
         run: |
+          # Remove this old crun executable to let brew to install a newer one ...
+          apt-get remove crun
+      - name: Install podman and show dependencies
+        run: |
+          # What brew will install: https://ghcr.io/v2/homebrew/core/podman/manifests/5.3.1_1
           brew install podman
-          brew install crun
           brew services start podman
-      - name: Display versions    
+          
+          brew deps --tree --installed podman
+
+      - name: Display versions
         run: |
           podman -v
           crun -v
