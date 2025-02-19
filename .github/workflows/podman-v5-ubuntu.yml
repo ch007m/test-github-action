@@ -31,7 +31,7 @@ jobs:
           sudo systemctl stop docker
 
           brew install podman
-          brew services start podman 
+          brew services start podman
 
           echo "Expose the podman API and podman.socket"
           podman system service --time=0 &
@@ -40,15 +40,12 @@ jobs:
           echo "Podman rootless: " $(podman info -f json | jq -r .host.security.rootless)
           echo "Podman sock path: " $(podman info -f json | jq -r .host.remoteSocket.path)
 
-          echo "Podman sock path: unix://${XDG_RUNTIME_DIR}/podman/podman.sock"
           echo "PODMAN_SOCK_PATH=${XDG_RUNTIME_DIR}/podman/podman.sock" >> $GITHUB_ENV
 
       - name: Display versions
         run: |
           podman -v
-          crun -v
-          podman info
 
       - name: Run container
         run: |
-          podman --log-level debug run -it -p 8888:8888 nginxdemos/nginx-hello:plain-text
+          podman run -it -p 8888:8888 nginxdemos/nginx-hello:plain-text
