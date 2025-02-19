@@ -36,15 +36,16 @@ jobs:
           echo "Expose the podman API and podman.socket"
           podman system service --time=0 &
 
+      - name: Grab information
+        run: |
+          podman -v
+          
           echo "Podman version: " $(podman info -f json | jq -r .version.Version)
           echo "Podman rootless: " $(podman info -f json | jq -r .host.security.rootless)
           echo "Podman sock path: " $(podman info -f json | jq -r .host.remoteSocket.path)
 
           echo "PODMAN_SOCK_PATH=${XDG_RUNTIME_DIR}/podman/podman.sock" >> $GITHUB_ENV
 
-      - name: Display versions
-        run: |
-          podman -v
 
       - name: Run container
         run: |
