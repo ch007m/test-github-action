@@ -2,8 +2,8 @@ name: ubuntu-homebrew-podman-v5
 
 on:
   workflow_dispatch:
-  repository_dispatch:
-    types: [e2e-command]
+  #repository_dispatch:
+  #  types: [e2e-command]
   pull_request:
   push:
     branches:
@@ -13,7 +13,7 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     #if: ${{ github.event.action == 'e2e-command' || github.event.action == 'e2e' }}
-    if: github.event.issue.pull_request && contains(github.event.comment.body, '/e2e')
+    #if: github.event.issue.pull_request && contains(github.event.comment.body, '/e2e')
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
