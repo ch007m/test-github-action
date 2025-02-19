@@ -1,4 +1,4 @@
-name: ubuntu-homebrew-podman
+name: ubuntu-homebrew-podman-v5
 
 on:
   workflow_dispatch:
