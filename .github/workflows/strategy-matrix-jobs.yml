@@ -1,0 +1,33 @@
+# yamllint disable-line rule:document-start
+name: Multi Platform Runner
+
+on:
+  workflow_dispatch:
+
+jobs:
+  integration-tests:
+    strategy:
+      # Each test is a different scenario, do not cancel running tests if one fails
+      fail-fast: false
+      matrix:
+        # Define projects to test, don't use generated matrix
+        # as will need projects appropriate for each jvm to test
+        projects: [
+          { runner: "macos-13",     project: "hello-spring",  java: "17", java-buildpack-lib-jitpack: "com.github.BarDweller.java-buildpack-client:buildpack-client:2b953b486e", runtime: "podman5", root: "rootless" },
+          { runner: "ubuntu-24.04", project: "hello-spring",  java: "17", java-buildpack-lib-jitpack: "com.github.BarDweller.java-buildpack-client:buildpack-client:2b953b486e", runtime: "podman5", root: "rootless" },
+        ]
+    runs-on: ["${{matrix.projects.runner}}"]
+    # Keep name short, as GitHub ui does not allow many chars to be displayed
+    name: Java ${{ matrix.projects.java }} ${{ matrix.projects.project }} ${{ matrix.projects.runtime }} ${{ matrix.projects.root }} ${{ matrix.projects.runner }}
+
+    steps:
+      # Checkout the project
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Install and configure podman for mac
+      - name: Podman5 Mac
+        if: matrix.projects.runner == 'macos-13' && matrix.projects.runtime == 'podman5'
+        run: |
+          echo "Installing Podman for Mac"
+          echo "/opt/podman/bin" >> $GITHUB_PATH

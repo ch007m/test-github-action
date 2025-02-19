@@ -1,0 +1,52 @@
+name: ubuntu-homebrew-podman
+
+on:
+  workflow_dispatch:
+  repository_dispatch:
+    types: [e2e-command]
+  push:
+    branches:
+      - main
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.action == 'e2e-command' }}
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Homebrew
+        uses: Homebrew/actions/setup-homebrew@master
+
+      - name: Install podman v5
+        run: |
+          # Remove the old crun executable coming from podman v4 ubuntu package to let brew to install a newer one ...
+          sudo apt-get remove crun
+          sudo apt-get remove podman
+
+          sudo systemctl stop docker.socket
+          sudo systemctl stop docker
+
+          brew install podman
+          brew services start podman 
+
+          echo "Expose the podman API and podman.socket"
+          podman system service --time=0 &
+
+          echo "Podman version: " $(podman info -f json | jq -r .version.Version)
+          echo "Podman rootless: " $(podman info -f json | jq -r .host.security.rootless)
+          echo "Podman sock path: " $(podman info -f json | jq -r .host.remoteSocket.path)
+
+          echo "Podman sock path: unix://${XDG_RUNTIME_DIR}/podman/podman.sock"
+          echo "PODMAN_SOCK_PATH=${XDG_RUNTIME_DIR}/podman/podman.sock" >> $GITHUB_ENV
+
+      - name: Display versions
+        run: |
+          podman -v
+          crun -v
+          podman info
+
+      - name: Run container
+        run: |
+          podman --log-level debug run -it -p 8888:8888 nginxdemos/nginx-hello:plain-text
