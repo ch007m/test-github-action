@@ -20,6 +20,8 @@ jobs:
 
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
+        with:
+          stable: true
 
       - name: Install podman v5
         run: |
@@ -39,7 +41,7 @@ jobs:
       - name: Grab information
         run: |
           podman -v
-          
+
           echo "Podman version: " $(podman info -f json | jq -r .version.Version)
           echo "Podman rootless: " $(podman info -f json | jq -r .host.security.rootless)
           echo "Podman sock path: " $(podman info -f json | jq -r .host.remoteSocket.path)
