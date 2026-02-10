@@ -75,9 +75,11 @@ jobs:
           kubectl get events -n $K8S_NAMESPACE --sort-by='.lastTimestamp' | tail -n 10
           exit 1
 
-      - name: Check pod running
+      - name: Check postgresql pod
         run: |
-          kubectl -n $K8S_NAMESPACE get pods   
+          kubectl -n $K8S_NAMESPACE get pods
+          kubectl -n $K8S_NAMESPACE describe postgresql-db-0
+          kubectl -n $K8S_NAMESPACE logs postgresql-db-0
 
 
 
