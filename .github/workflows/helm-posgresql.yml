@@ -78,20 +78,20 @@ jobs:
           
           cat <<EOF > values.yml
           postgresql:
-          enabled: true
-          global:
-            postgresql:
-              auth:
-                database: my_db_name
-                key: value
-                postgresPassword: secret
-          primary:
-            containerSecurityContext:
-              enabled: false
-            podSecurityContext:
-              enabled: false
-          volumePermissions:
             enabled: true
+            global:
+              postgresql:
+                auth:
+                  database: my_db_name
+                  key: value
+                  postgresPassword: secret
+            primary:
+              containerSecurityContext:
+                enabled: false
+              podSecurityContext:
+                enabled: false
+            volumePermissions:
+              enabled: true
           EOF
           
           helm install $RELEASE_NAME $CHARTS/postgresql-18.2.4 -n $K8S_NAMESPACE -f values.yml
