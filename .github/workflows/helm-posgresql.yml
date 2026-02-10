@@ -31,6 +31,7 @@ jobs:
       - name: Kubernetes KinD Cluster
         uses: container-tools/kind-action@v1
         with:
+          version: v0.11.1
           registry: true
 
         #uses: helm/kind-action@v1
@@ -110,7 +111,6 @@ jobs:
           kubectl -n $K8S_NAMESPACE describe pvc/data-postgresql-db-0
           
           echo "########## Get Events #########"
-          # -for pod/postgresql-db-0
           kubectl events -A
           
           echo "########## Get log #########"
