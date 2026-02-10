@@ -63,6 +63,7 @@ jobs:
           reclaimPolicy: Delete
           volumeBindingMode: Immediate
           EOF
+          kubectl get sc
 
       - name: Install Postgresql helm chart
         run: |
@@ -101,8 +102,10 @@ jobs:
           echo "########## Get Pod #########"
           kubectl -n $K8S_NAMESPACE get pod/postgresql-db-0
           
-          echo "########## Get PVC #########"
+          echo "########## Get PV #########"
           kubectl get pv
+          
+          echo "########## Get PVC #########"
           kubectl -n $K8S_NAMESPACE get pvc
           kubectl -n $K8S_NAMESPACE describe pvc/data-postgresql-db-0
           
