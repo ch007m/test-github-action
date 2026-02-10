@@ -52,13 +52,13 @@ jobs:
           echo "Cluster is ready!"
           
           echo "########### Cluster pods ##########"
-          kubectl get pods
+          kubectl get pods -A
           
           echo "############ Wait for the pod to reach 'Ready' status ######"
           kubectl wait --for=condition=ready pod -l app=local-path-provisioner -n local-path-storage --timeout=60s
           
           echo "############ Check pods ######"
-          kubectl get pods
+          kubectl get pods -A
           
       - name: Install helm 4
         run: |
