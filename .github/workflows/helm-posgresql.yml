@@ -50,15 +50,21 @@ jobs:
           kubectl wait --for=condition=Ready pods --all -n kube-system --timeout=300s
       
           echo "Cluster is ready!"
-
-      - name: Install helm 4
-        run: |
-          #sudo apt remove helm
-          which helm
-          curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4
-          chmod 700 get_helm.sh
-          ./get_helm.sh
-          helm version
+          
+          echo "########### Cluster pods ##########
+          kubectl get pods
+          
+          echo "############ Status of local storage ##########
+          kubectl logs -lapp=local-path-provisioner -n local-path-storage
+          
+         - name: Install helm 4
+                 run: |
+                   #sudo apt remove helm
+                   which helm
+                   curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-4
+                   chmod 700 get_helm.sh
+                   ./get_helm.sh
+                   helm version
 
       #- name: Change the storage class volumeBindingMode to immediate
       #  run: |
