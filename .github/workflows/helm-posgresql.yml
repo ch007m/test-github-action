@@ -1,0 +1,67 @@
+name: helm-postgresql
+
+# We need to set these defaults so that .bashrc is called for each step.
+# This is needed so that sdkman can be properly intialized
+defaults:
+  run:
+    shell: bash -ieo pipefail {0}
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [ 21 ]
+        jbang-version: [0.136.0]
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: ${{matrix.java-version}}
+          check-latest: true
+          cache: 'maven'
+
+      - name: Setup sdkman
+        run: |
+          curl -s "https://get.sdkman.io" | bash
+          source "$HOME/.sdkman/bin/sdkman-init.sh"
+          sdkman_auto_answer=false
+          sdkman_selfupdate_enable=false
+
+      - name: Setup jbang
+        run: |
+          sdk install jbang ${{matrix.jbang-version}}
+          sdk default jbang ${{matrix.jbang-version}}
+
+      - name: Kubernetes KinD Cluster
+        uses: container-tools/kind-action@v1
+        with:
+          version: v0.11.1
+          registry: true
+
+      - name: Check helm version
+        run:
+          helm version
+
+      - name: Install postgresql helm chart
+        run:
+          K8S_NAMESPACE=helm
+          CHARTS=$(pwd)/.github/charts
+          kubectl create namespace $K8S_NAMESPACE
+          
+          helm install postgresql-db $CHARTS/postgresql-18.2.4 -n $K8S_NAMESPACE
+          helm status postgresql-db -n $K8S_NAMESPACE
+
+
+
+
