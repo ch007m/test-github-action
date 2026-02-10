@@ -508,7 +508,7 @@ primary:
   ## @param primary.podSecurityContext.fsGroup Group ID for the pod
   ##
   podSecurityContext:
-    enabled: true
+    enabled: false #true
     fsGroupChangePolicy: Always
     sysctls: []
     supplementalGroups: []
@@ -527,7 +527,7 @@ primary:
   ## @param primary.containerSecurityContext.seccompProfile.type Set container's Security Context seccomp profile
   ##
   containerSecurityContext:
-    enabled: true
+    enabled: false #true
     seLinuxOptions: {}
     runAsUser: 1001
     runAsGroup: 1001
@@ -1616,7 +1616,7 @@ passwordUpdateJob:
 volumePermissions:
   ## @param volumePermissions.enabled Enable init container that changes the owner and group of the persistent volume
   ##
-  enabled: false
+  enabled: true # false
   ## @param volumePermissions.image.registry [default: REGISTRY_NAME] Init container volume-permissions image registry
   ## @param volumePermissions.image.repository [default: REPOSITORY_NAME/os-shell] Init container volume-permissions image repository
   ## @skip volumePermissions.image.tag Init container volume-permissions image tag (immutable tags are recommended)
