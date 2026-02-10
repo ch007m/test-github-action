@@ -28,18 +28,28 @@ jobs:
       #  run: |
       #    curl -Ls https://sh.jbang.dev | bash -s - app setup
 
-      #- name: Kubernetes KinD Cluster
-      #  uses: container-tools/kind-action@v1
-      #  with:
-      #    version: v0.11.1
-      #    registry: true
-
       - name: Kubernetes KinD Cluster
-        uses: helm/kind-action@v1
+        uses: container-tools/kind-action@v1
         with:
-          registry: false
-          #registry_name: my-registry
-          #registry_port: 5001
+          version: v0.11.1
+          registry: true
+
+      - name: Wait for Cluster Readiness
+        run: |
+          echo "Waiting for nodes to be ready..."
+          kubectl wait --for=condition=Ready nodes --all --timeout=300s
+          
+          echo "Waiting for system pods to be ready..."
+          kubectl wait --for=condition=Ready pods --all -n kube-system --timeout=300s
+      
+          echo "Cluster is ready!"
+
+      #- name: Kubernetes KinD Cluster
+      #  uses: helm/kind-action@v1
+      #  with:
+      #    registry: false
+      #    #registry_name: my-registry
+      #    #registry_port: 5001
 
       - name: Install helm 4
         run: |
