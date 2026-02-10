@@ -51,7 +51,7 @@ jobs:
       
           echo "Cluster is ready!"
           
-          echo "########### Cluster pods ##########
+          echo "########### Cluster pods ##########"
           kubectl get pods
           
           echo "############ Wait for the pod to reach 'Ready' status ######"
