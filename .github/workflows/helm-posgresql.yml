@@ -80,6 +80,9 @@ jobs:
           echo "########## Get Pod #########"
           kubectl -n $K8S_NAMESPACE get pod/postgresql-db-0
           
+          echo "########## Get PVC #########"
+          kubectl -n $K8S_NAMESPACE get pvc
+          
           echo "########## Get Events #########"
           kubectl -n $K8S_NAMESPACE events --for pod/postgresql-db-0
           
