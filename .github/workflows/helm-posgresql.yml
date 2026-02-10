@@ -24,9 +24,9 @@ jobs:
           check-latest: true
           cache: 'maven'
 
-      - name: Install jbang
-        run: |
-          curl -Ls https://sh.jbang.dev | bash -s - app setup
+      #- name: Install jbang
+      #  run: |
+      #    curl -Ls https://sh.jbang.dev | bash -s - app setup
 
       - name: Kubernetes KinD Cluster
         uses: container-tools/kind-action@v1
@@ -50,6 +50,10 @@ jobs:
           
           helm install postgresql-db $CHARTS/postgresql-18.2.4 -n $K8S_NAMESPACE
           helm status postgresql-db -n $K8S_NAMESPACE
+
+      - name: Check pod running
+        run: |
+          kubectl -n $K8S_NAMESPACE get pods
 
       - name: Debug PostgreSQL Failure
         if: failure()
