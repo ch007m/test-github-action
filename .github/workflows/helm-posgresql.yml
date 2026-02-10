@@ -78,8 +78,8 @@ jobs:
       - name: Check postgresql pod
         run: |
           kubectl -n $K8S_NAMESPACE get pods
-          kubectl -n $K8S_NAMESPACE describe postgresql-db-0
-          kubectl -n $K8S_NAMESPACE logs postgresql-db-0
+          kubectl -n $K8S_NAMESPACE describe pod/postgresql-db-0
+          kubectl -n $K8S_NAMESPACE logs pod/postgresql-db-0
 
 
 
