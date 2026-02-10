@@ -48,18 +48,18 @@ jobs:
           CHARTS=$(pwd)/.github/charts
           kubectl create namespace $K8S_NAMESPACE
           
-          helm install postgresql-db $CHARTS/postgresql-18.2.4 -n $K8S_NAMESPACE
-          helm status postgresql-db -n $K8S_NAMESPACE
-  
-          RELEASE_NAME="postgresql-db"
+          RELEASE_NAME=postgresql-db
           MAX_ATTEMPTS=20
           SLEEP_TIME=5
           
+          helm install $RELEASE_NAME $CHARTS/postgresql-18.2.4 -n $K8S_NAMESPACE
+          helm status $RELEASE_NAME -n $K8S_NAMESPACE
+  
           echo "Waiting for Helm release '$RELEASE_NAME' to be 'deployed'..."
           
           for ((i=1; i<=MAX_ATTEMPTS; i++)); do
             # -o json allows us to parse the status accurately with jq
-            STATUS=$(helm status "$RELEASE_NAME" -n "$NAMESPACE" -o json | jq -r '.info.status')
+            STATUS=$(helm status $RELEASE_NAME -n $K8S_NAMESPACE -o json | jq -r '.info.status')
              
             if [ "$STATUS" == "deployed" ]; then
               echo "✅ Success: Release is deployed."
@@ -71,8 +71,8 @@ jobs:
           done
           
           echo "::error::Timed out waiting for Helm release to deploy."
-          helm status "$RELEASE_NAME" -n "$NAMESPACE"
-          kubectl get events -n "$NAMESPACE" --sort-by='.lastTimestamp' | tail -n 10
+          helm status $RELEASE_NAME -n $K8S_NAMESPACE
+          kubectl get events -n $K8S_NAMESPACE --sort-by='.lastTimestamp' | tail -n 10
           exit 1
 
       - name: Check pod running
