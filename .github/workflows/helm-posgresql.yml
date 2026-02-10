@@ -10,7 +10,6 @@ jobs:
     strategy:
       matrix:
         java-version: [ 21 ]
-        jbang-version: [0.136.0]
     steps:
       - uses: actions/checkout@v3
 
@@ -22,17 +21,9 @@ jobs:
           check-latest: true
           cache: 'maven'
 
-      - name: Setup sdkman
+      - name: Install jbang
         run: |
-          curl -s "https://get.sdkman.io" | bash
-          source "$HOME/.sdkman/bin/sdkman-init.sh"
-          sdkman_auto_answer=false
-          sdkman_selfupdate_enable=false
-
-      - name: Setup jbang
-        run: |
-          sdk install jbang ${{matrix.jbang-version}}
-          sdk default jbang ${{matrix.jbang-version}}
+          curl -Ls https://sh.jbang.dev | bash -s - app setup
 
       - name: Kubernetes KinD Cluster
         uses: container-tools/kind-action@v1
