@@ -138,7 +138,8 @@ jobs:
 
       - name: Check postgresql pod
         run: |
-          echo "########## Get Pod #########"
+          echo "########## Wait till Pod is running #########"
+          kubectl wait -n $K8S_NAMESPACE --for=condition=ready pod/postgresql-db-0 --timeout=90s
           kubectl -n $K8S_NAMESPACE get pod/postgresql-db-0
           
           echo "########## Get PV #########"
