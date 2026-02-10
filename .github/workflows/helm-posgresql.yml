@@ -1,16 +1,7 @@
 name: helm-postgresql
 
-# We need to set these defaults so that .bashrc is called for each step.
-# This is needed so that sdkman can be properly intialized
-defaults:
-  run:
-    shell: bash -ieo pipefail {0}
-
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - main
 
 jobs:
   build:
@@ -54,7 +45,7 @@ jobs:
           helm version
 
       - name: Install postgresql helm chart
-        run:
+        run: |
           K8S_NAMESPACE=helm
           CHARTS=$(pwd)/.github/charts
           kubectl create namespace $K8S_NAMESPACE
