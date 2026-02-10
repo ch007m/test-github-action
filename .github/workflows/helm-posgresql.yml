@@ -81,7 +81,7 @@ jobs:
           kubectl -n $K8S_NAMESPACE get pod/postgresql-db-0
           
           echo "########## Get Events #########"
-          kubectl -n $K8S_NAMESPACE events pod/postgresql-db-0
+          kubectl events -n $K8S_NAMESPACE --for pod/postgresql-db-0
           
           echo "########## Get log #########"
           kubectl -n $K8S_NAMESPACE logs pod/postgresql-db-0
