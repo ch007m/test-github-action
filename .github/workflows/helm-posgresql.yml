@@ -54,8 +54,11 @@ jobs:
           echo "########### Cluster pods ##########
           kubectl get pods
           
-          echo "############ Status of local storage ##########
-          kubectl logs -lapp=local-path-provisioner -n local-path-storage
+          echo "############ Wait for the pod to reach 'Ready' status ######
+          kubectl wait --for=condition=ready pod -l app=local-path-provisioner -n local-path-storage --timeout=60s
+          
+          echo "############ Check pods ######
+          kubectl get pods
           
       - name: Install helm 4
         run: |
