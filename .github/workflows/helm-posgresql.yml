@@ -28,17 +28,18 @@ jobs:
       #  run: |
       #    curl -Ls https://sh.jbang.dev | bash -s - app setup
 
-      - name: Kubernetes KinD Cluster
-        uses: container-tools/kind-action@v1
-        with:
-          version: v0.11.1
-          registry: true
+      #- name: Kubernetes KinD Cluster
+      #  uses: container-tools/kind-action@v1
+      #  with:
+      #    version: v0.11.1
+      #    registry: true
 
-        #uses: helm/kind-action@v1
-        #with:
-        #  registry: true
-        #  registry_name: my-registry
-        #  registry_port: 5001
+      - name: Kubernetes KinD Cluster
+        uses: helm/kind-action@v1
+        with:
+          registry: false
+          #registry_name: my-registry
+          #registry_port: 5001
 
       - name: Install helm 4
         run: |
