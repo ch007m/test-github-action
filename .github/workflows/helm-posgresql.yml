@@ -29,10 +29,11 @@ jobs:
       #    curl -Ls https://sh.jbang.dev | bash -s - app setup
 
       - name: Kubernetes KinD Cluster
-        uses: container-tools/kind-action@v1
+        uses: helm/kind-action@v1
         with:
-          version: v0.11.1
           registry: true
+          registry_name: my-registry
+          registry_port: 5001
 
       - name: Install helm 4
         run: |
@@ -43,7 +44,7 @@ jobs:
           ./get_helm.sh
           helm version
 
-      - name: Install postgresql helm chart
+      - name: Install Postgresql helm chart
         run: |
           CHARTS=$(pwd)/.github/charts
           kubectl create namespace $K8S_NAMESPACE
@@ -82,6 +83,7 @@ jobs:
           
           echo "########## Get PVC #########"
           kubectl -n $K8S_NAMESPACE get pvc
+          kubectl -n $K8S_NAMESPACE describe pvc/data-postgresql-db-0
           
           echo "########## Get Events #########"
           kubectl events --for pod/postgresql-db-0
