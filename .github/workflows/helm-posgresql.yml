@@ -3,6 +3,9 @@ name: helm-postgresql
 on:
   workflow_dispatch:
 
+env:
+  K8S_NAMESPACE: helm
+
 jobs:
   build:
     name: Build
@@ -41,12 +44,26 @@ jobs:
 
       - name: Install postgresql helm chart
         run: |
-          K8S_NAMESPACE=helm
           CHARTS=$(pwd)/.github/charts
           kubectl create namespace $K8S_NAMESPACE
           
           helm install postgresql-db $CHARTS/postgresql-18.2.4 -n $K8S_NAMESPACE
           helm status postgresql-db -n $K8S_NAMESPACE
+
+      - name: Debug PostgreSQL Failure
+        if: failure()
+        run: |
+          echo "::group::Kubernetes Events"
+          kubectl get events -n $K8S_NAMESPACE --sort-by='.lastTimestamp' | grep -i "postgresql" || true
+          echo "::endgroup::"
+
+          echo "::group::Pod Description"
+          kubectl describe pod postgresql-db -n $K8S_NAMESPACE
+          echo "::endgroup::"
+
+          echo "::group::Crash logs (Previous Instance)"
+          kubectl logs postgresql-db -n $K8S_NAMESPACE --previous || echo "No previous logs available."
+          echo "::endgroup::"    
 
 
 
