@@ -48,22 +48,22 @@ jobs:
           ./get_helm.sh
           helm version
 
-      - name: Change the storage class volumeBindingMode to immediate
-        run: |
-          kubectl get sc
-          kubectl delete sc standard
-          cat <<EOF | kubectl apply -f -
-          apiVersion: storage.k8s.io/v1
-          kind: StorageClass
-          metadata:
-            name: standard
-            annotations:
-              storageclass.kubernetes.io/is-default-class: "true"
-          provisioner: rancher.io/local-path
-          reclaimPolicy: Delete
-          volumeBindingMode: Immediate
-          EOF
-          kubectl get sc
+      #- name: Change the storage class volumeBindingMode to immediate
+      #  run: |
+      #    kubectl get sc
+      #    kubectl delete sc standard
+      #    cat <<EOF | kubectl apply -f -
+      #    apiVersion: storage.k8s.io/v1
+      #    kind: StorageClass
+      #    metadata:
+      #      name: standard
+      #      annotations:
+      #        storageclass.kubernetes.io/is-default-class: "true"
+      #    provisioner: rancher.io/local-path
+      #    reclaimPolicy: Delete
+      #    volumeBindingMode: Immediate
+      #    EOF
+      #    kubectl get sc
 
       - name: Install Postgresql helm chart
         run: |
