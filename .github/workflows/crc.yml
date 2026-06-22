@@ -29,8 +29,9 @@ jobs:
       - name: Setup OpenShift Local Environment
         run: |
           # Configure CRC to use appropriate system resources
+          crc stop
           crc config set cpus 4
-          crc config set memory 10240
+          crc config set memory 10752
           crc config set preset microshift
           
           # Initialize environment for cluster
