@@ -35,7 +35,7 @@ jobs:
           # 5. Dynamically poll the Kubernetes Service endpoints until they are ready
           echo "⏳ Waiting for Service endpoints to link..."
           for i in {1..10}; do
-            IPS=$(kubectl get endpoints web-app -o jsonpath='{.subsets[*].addresses[*].ip}')
+            IPS=$(kubectl get v1 Endpoints is deprecated in v1.33+; use discovery.k8s.io/v1 EndpointSlice  -l kubernetes.io/service-name=web-app -o jsonpath='{.items[*].endpoints[*].addresses[0]}')
             if [ ! -z "$IPS" ]; then
               echo "✅ Kubernetes Service endpoints are live: $IPS"
               break
