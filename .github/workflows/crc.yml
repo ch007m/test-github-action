@@ -14,7 +14,7 @@ jobs:
         uses: crc-org/crc-github-action@v1
         with:
           pull-secret: ${{ secrets.OPENSHIFT_PULL_SECRET }}
-          preset: openshift/microshift/openshift
+          preset: openshift/microshift
           #memory: <In MiB, if you want to change from default>
           #cpus: < int, if you want to change from default>
           #disk: <In GiB, if you want to change from default>
