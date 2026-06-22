@@ -18,3 +18,50 @@ jobs:
           #memory: <In MiB, if you want to change from default>
           #cpus: < int, if you want to change from default>
           #disk: <In GiB, if you want to change from default>
+
+      - name: Deploy, Wait, and Ping Kubernetes Service
+        run: |
+          echo "📦 Creating Kubernetes Deployment..."
+          kubectl create deployment web-app --image=nginxdemos/hello:plain-text
+          
+          # 3. Expose the deployment using a KUBERNETES SERVICE resource
+          echo "🔌 Exposing deployment via a Kubernetes Service..."
+          kubectl expose deployment web-app --type=NodePort --port=80 --target-port=80
+          
+          # 4. Wait dynamically until the Pod backing the service is fully running
+          echo "⏳ Waiting for Kubernetes Deployment rollout..."
+          kubectl rollout status deployment/web-app --timeout=60s
+          
+          # 5. Dynamically poll the Kubernetes Service endpoints until they are ready
+          echo "⏳ Waiting for Service endpoints to link..."
+          for i in {1..10}; do
+            IPS=$(kubectl get endpoints web-app -o jsonpath='{.subsets[*].addresses[*].ip}')
+            if [ ! -z "$IPS" ]; then
+              echo "✅ Kubernetes Service endpoints are live: $IPS"
+              break
+            fi
+            echo "Waiting for endpoints... ($i/10)"
+            sleep 2
+          done
+          
+          # 6. Bridge the network: Port-forward the Kubernetes Service to the local runner
+          echo "🔌 Routing Kubernetes Service traffic to localhost:8080..."
+          kubectl port-forward service/web-app 8080:80 &
+          sleep 3 # Give the background port-forward tunnel a moment to stabilize
+          
+          # 7. Ping the Service endpoint using curl
+          echo "📡 Pinging the Kubernetes Service..."
+          RESPONSE=$(curl -s http://localhost:8080)
+          
+          echo "📥 Response payload received from K8s:"
+          echo "----------------------------------------"
+          echo "$RESPONSE"
+          echo "----------------------------------------"
+          
+          # 8. Assert the response proves the Kubernetes Service worked
+          if [[ "$RESPONSE" == *"Server"* || ! -z "$RESPONSE" ]]; then
+            echo "🎉 Success! The Kubernetes Service successfully routed traffic to the application."
+          else
+            echo "❌ Error: Did not receive an expected response from the Kubernetes Service."
+          exit 1
+          fi
