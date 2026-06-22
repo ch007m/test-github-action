@@ -23,8 +23,8 @@ jobs:
           curl -L -o crc-linux.tar.xz "https://developers.redhat.com/content-gateway/rest/mirror/pub/openshift-v4/clients/crc/latest/crc-linux-amd64.tar.xz"
           tar -xvf crc-linux.tar.xz
           # Move binary to path
-          sudo mv crc-*-linux-amd64/crc /usr/local/bin/crc
-          rm -rf crc-linux.tar.xz crc-*-linux-amd64
+          sudo mv crc-linux-*-amd64/crc /usr/local/bin/crc
+          rm -rf crc-linux.tar.xz crc-linux-*-amd64
 
       - name: Setup OpenShift Local Environment
         run: |
