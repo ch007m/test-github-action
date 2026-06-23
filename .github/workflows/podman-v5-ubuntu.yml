@@ -1,9 +1,10 @@
-name: ubuntu-homebrew-podman
+name: ubuntu-homebrew-podman-v5
 
 on:
   workflow_dispatch:
   repository_dispatch:
     types: [e2e-command]
+  pull_request:
   push:
     branches:
       - main
@@ -11,13 +12,16 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    if: ${{ github.event.action == 'e2e-command' }}
+    if: ${{ github.event.action == 'e2e-command' || github.event.action == 'e2e' }}
+    #if: github.event.issue.pull_request && contains(github.event.comment.body, '/e2e')
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Set up Homebrew
         uses: Homebrew/actions/setup-homebrew@master
+        with:
+          stable: true
 
       - name: Install podman v5
         run: |
@@ -29,24 +33,22 @@ jobs:
           sudo systemctl stop docker
 
           brew install podman
-          brew services start podman 
+          brew services start podman
 
           echo "Expose the podman API and podman.socket"
           podman system service --time=0 &
+
+      - name: Grab information
+        run: |
+          podman -v
 
           echo "Podman version: " $(podman info -f json | jq -r .version.Version)
           echo "Podman rootless: " $(podman info -f json | jq -r .host.security.rootless)
           echo "Podman sock path: " $(podman info -f json | jq -r .host.remoteSocket.path)
 
-          echo "Podman sock path: unix://${XDG_RUNTIME_DIR}/podman/podman.sock"
           echo "PODMAN_SOCK_PATH=${XDG_RUNTIME_DIR}/podman/podman.sock" >> $GITHUB_ENV
 
-      - name: Display versions
-        run: |
-          podman -v
-          crun -v
-          podman info
 
       - name: Run container
         run: |
-          podman --log-level debug run -it -p 8888:8888 nginxdemos/nginx-hello:plain-text
+          podman run -it -p 8888:8888 nginxdemos/nginx-hello:plain-text
