@@ -9,6 +9,7 @@ jobs:
     strategy:
       matrix:
         flavor: [ okd, microshift, openshift ]
+        node-name: [ crc, api.crc.testing, crc ]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -29,7 +30,7 @@ jobs:
           echo "Node information"
           kubectl get node
           echo "============================"
-          kubectl describe node/api.crc.testing
+          kubectl describe node/${{ matrix.node-name }}
           
           echo "List of pods ...."
           kubectl get pods -A
