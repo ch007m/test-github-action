@@ -14,13 +14,17 @@ jobs:
         uses: crc-org/crc-github-action@v1
         with:
           pull-secret: ${{ secrets.OPENSHIFT_PULL_SECRET }}
-          preset: microshift
+          preset: okd
           #memory: <In MiB, if you want to change from default>
           #cpus: < int, if you want to change from default>
           #disk: <In GiB, if you want to change from default>
 
       - name: Deploy, Wait, and Ping Kubernetes Service
         run: |
+          echo "Check what it has been deployed ..."
+          kubectl get pods -A
+          kubectl get ns
+          
           echo "📦 Creating Kubernetes Deployment..."
           kubectl create deployment web-app --image=nginxdemos/hello:plain-text
           
