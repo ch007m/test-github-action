@@ -8,8 +8,13 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        flavor: [ okd, microshift, openshift ]
-        node-name: [ crc, api.crc.testing, crc ]
+        include:
+         - flavor: okd
+           node-name: crc
+         - flavor: microshift
+           node-name: api.crc.testing
+         - flavor: openshift
+           node-name: crc
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
