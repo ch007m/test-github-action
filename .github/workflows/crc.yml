@@ -6,6 +6,9 @@ on:
 jobs:
   openshift-local:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        flavor: [ okd, microshift, openshift ]
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
@@ -14,7 +17,7 @@ jobs:
         uses: crc-org/crc-github-action@v1
         with:
           pull-secret: ${{ secrets.OPENSHIFT_PULL_SECRET }}
-          preset: okd
+          preset: ${{ matrix.flavor }}
           #memory: <In MiB, if you want to change from default>
           #cpus: < int, if you want to change from default>
           #disk: <In GiB, if you want to change from default>
@@ -22,7 +25,16 @@ jobs:
       - name: Deploy, Wait, and Ping Kubernetes Service
         run: |
           echo "Check what it has been deployed ..."
+          
+          echo "Node information"
+          kubectl get node
+          echo "============================"
+          kubectl describe node/api.crc.testing
+          
+          echo "List of pods ...."
           kubectl get pods -A
+          
+          echo "List of namespaces ...."
           kubectl get ns
           
           echo "📦 Creating Kubernetes Deployment..."
